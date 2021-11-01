@@ -84,7 +84,6 @@ func (df *MockFactory) NewVaultAccessor(vaultType string) core.VaultAccessorPort
 
 
 func (df *MockFactory) newVaultAccessorInternal(vaultType string) core.VaultAccessorPort {
-	df.t.Logf("MockFactory.NewVaultAccessor, type=%s\n", vaultType)
 	va := mocks.NewMockVaultAccessorPort(df.mockCtrl)
 	df.vaults[vaultType] = va
 	return va
