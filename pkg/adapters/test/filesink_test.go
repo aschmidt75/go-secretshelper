@@ -49,7 +49,8 @@ func TestFileSink(t *testing.T) {
 		t.Errorf("Unexpected: %s", err)
 	}
 
-	if !reflect.DeepEqual(raw, (*secrets)[0].RawContent)) {
+	cmp := reflect.DeepEqual(raw, (*secrets)[0].RawContent)
+	if !cmp {
 		t.Errorf("Invalid content")
 	}
 }
