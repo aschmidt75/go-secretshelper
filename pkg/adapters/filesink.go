@@ -12,9 +12,10 @@ import (
 
 // FileSinkSpec is a specialisation of the SinkSpec interface for file sink
 type FileSinkSpec struct {
-	Mode *uint32 `yaml:"mode,omitempty"`
-	UserID  *int `yaml:"user,omitempty"`
-	GroupID *int `yaml:"group,omitempty"`
+	Path string `yaml:"path" validate:"required"`
+	Mode *uint32 `yaml:"mode,omitempty" validate:"required"`
+	UserID  *int `yaml:"user,omitempty" validate:"required"`
+	GroupID *int `yaml:"group,omitempty" validate:"required"`
 }
 
 // FileSink is a file-based sink endpoint, where secrets are written to files
@@ -38,11 +39,17 @@ func NewFileSinkSpec(in map[interface{}]interface{}) (FileSinkSpec, error) {
 	var defaultMode uint32 = 400
 	res.Mode = &defaultMode
 
-	v, ex := in["mode"]
+	v, ex := in["path"]
+	if !ex {
+		return res, errors.New("must provide a path element for a file sink spec")
+	}
+	res.Path = v.(string)
+
+	v, ex = in["mode"]
 	if ex {
 		vn, err := stringOrIntToI(v)
 		if err != nil {
-			return res, err
+			return res, errors.New("mode parameter in file sink spec must be string or integer")
 		}
 		var vn2 uint32 = uint32(vn)
 		res.Mode = &vn2
@@ -51,7 +58,7 @@ func NewFileSinkSpec(in map[interface{}]interface{}) (FileSinkSpec, error) {
 	if ex {
 		vn, err := stringOrIntToI(v)
 		if err != nil {
-			return res, err
+			return res,  errors.New("user parameter in file sink spec must be string or integer")
 		}
 		res.UserID = &vn
 	}
@@ -59,7 +66,7 @@ func NewFileSinkSpec(in map[interface{}]interface{}) (FileSinkSpec, error) {
 	if ex {
 		vn, err := stringOrIntToI(v)
 		if err != nil {
-			return res, err
+			return res,  errors.New("group parameter in file sink spec must be string or integer")
 		}
 		res.GroupID = &vn
 	}
@@ -75,18 +82,19 @@ func stringOrIntToI(v interface{}) (int, error) {
 	if ok {
 		vn, err = strconv.Atoi(vs)
 		if err != nil {
-			return vn, errors.New("mode parameter in file sink spec must be string with valid file mode")
+			return vn, err
 		}
 	} else {
 		vn, ok = v.(int)
 		if !ok {
-			return vn, errors.New("mode parameter in file sink spec must be string or integer")
+			return vn, errors.New("neither string nor int")
 		}
 	}
 
 	return vn, nil
 }
 
+// Write writes secret to sink, sets owner and mode if given by spec
 func (s *FileSink) Write(ctx context.Context, defaults *core.Defaults, secret *core.Secret, sink *core.Sink) error {
 
 	spec, err := NewFileSinkSpec(sink.Spec)
@@ -94,7 +102,7 @@ func (s *FileSink) Write(ctx context.Context, defaults *core.Defaults, secret *c
 		return err
 	}
 
-	f, err := s.fs.OpenFile(sink.Path, os.O_WRONLY|os.O_CREATE, os.FileMode(*spec.Mode))
+	f, err := s.fs.OpenFile(spec.Path, os.O_WRONLY|os.O_CREATE, os.FileMode(*spec.Mode))
 	if err != nil {
 		return err
 	}
@@ -107,7 +115,6 @@ func (s *FileSink) Write(ctx context.Context, defaults *core.Defaults, secret *c
 	if n != len(secret.RawContent) {
 		return errors.New("invalid number of bytes")
 	}
-	s.log.Printf("Written secret %s: %d bytes, to file %s, mode %d\n", secret.Name, n, sink.Path, os.FileMode(*spec.Mode))
 
 	uid := -1
 	gid := -1
@@ -117,9 +124,15 @@ func (s *FileSink) Write(ctx context.Context, defaults *core.Defaults, secret *c
 	if spec.GroupID != nil {
 		gid = *spec.GroupID
 	}
-	if err := s.fs.Chown(sink.Path, uid, gid); err != nil {
+	if err := s.fs.Chown(spec.Path, uid, gid); err != nil {
+		if err2 := s.fs.Remove(spec.Path); err2 != nil {
+			s.log.Printf("Unable to chown %s to %d/%d, AND unable to delete file afterwards.", spec.Path, uid, gid)
+		}
+
 		return err
 	}
+
+	s.log.Printf("Written secret %s: %d bytes, to file %s, mode %d, chown-ed %d:%d\n", secret.Name, n, spec.Path, os.FileMode(*spec.Mode), uid, gid)
 
 	return nil
 }

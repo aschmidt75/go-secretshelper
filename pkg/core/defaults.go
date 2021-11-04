@@ -1,5 +1,4 @@
 package core
 
-type Defaults struct {
-
-}
+// Defaults holds default values for parameters
+type Defaults struct {}

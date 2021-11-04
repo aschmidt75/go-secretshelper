@@ -45,15 +45,6 @@ func NewConfigFromFile(fileName string) (*Config, error) {
 	return NewConfig(f)
 }
 
-func (c *Config) VaultByName(vaultName string) *Vault {
-	for _, vault := range c.Vaults {
-		if vault.Name == vaultName {
-			return vault
-		}
-	}
-	return nil
-}
-
 // IsVarDefined checks if given variable name is defined, either in
 // secrets or as the result of a transformation step
 func (c* Config) IsVarDefined(varName string) bool {
@@ -90,7 +81,7 @@ func (c *Config) Validate() error {
 			return err
 		}
 
-		if v := c.VaultByName(secret.VaultName); v == nil {
+		if v := c.Vaults.GetVaultByName(secret.VaultName); v == nil {
 			return errors.New(
 				fmt.Sprintf("invalid vault %s referenced in secret %s", secret.VaultName, secret.Name))
 		}

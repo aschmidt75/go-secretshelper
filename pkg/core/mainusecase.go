@@ -12,6 +12,7 @@ type MainUseCaseImpl struct {
 	log *log.Logger
 }
 
+// NewMainUseCaseImpl creates a new main use case
 func NewMainUseCaseImpl(l *log.Logger) UseCase {
 	return &MainUseCaseImpl{
 		log: l,

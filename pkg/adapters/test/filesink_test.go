@@ -12,12 +12,17 @@ import (
 
 func TestFileSinkSpec(t *testing.T) {
 	fss, err := adapters.NewFileSinkSpec(core.SinkSpec{
+		"path": "tmp",
 		"mode": 440,
 		"user": 0,
 		"group": "-1",
 	})
 	if err != nil {
 		t.Errorf("unexpected: %s", err)
+	}
+	if fss.Path != "tmp" {
+		t.Errorf("expected tmp, got: %#v", fss.Path)
+
 	}
 	if fss.Mode == nil {
 		t.Error("unexpected: got nil")
@@ -42,6 +47,7 @@ func TestFileSinkSpec(t *testing.T) {
 	}
 
 	fss, err = adapters.NewFileSinkSpec(core.SinkSpec{
+		"path": "",
 		"mode": "440",
 	})
 	if err != nil {
@@ -78,12 +84,13 @@ func TestFileSink(t *testing.T) {
 			RawContent: []byte("s3cr3t"),
 		},
 	}
+	p := "test.dat"
 	sinks := &core.Sinks{
 		&core.Sink{
 			Type: "mock",
-			Path: "test.dat",
 			Var: "test",
 			Spec: core.SinkSpec{
+				"path": p,
 				"mode": "440",
 			},
 		},
@@ -98,7 +105,7 @@ func TestFileSink(t *testing.T) {
 	}
 
 	//
-	fi, err := fs.Stat((*sinks)[0].Path)
+	fi, err := fs.Stat(p)
 	if err != nil {
 		t.Errorf("Unexpected: %s", err)
 	}
@@ -110,7 +117,7 @@ func TestFileSink(t *testing.T) {
 		t.Errorf("Expected mode 440, got: %#v", fi.Mode().Perm())
 	}
 
-	raw, err := afero.ReadFile(fs,(*sinks)[0].Path)
+	raw, err := afero.ReadFile(fs,p)
 	if err != nil {
 		t.Errorf("Unexpected: %s", err)
 	}

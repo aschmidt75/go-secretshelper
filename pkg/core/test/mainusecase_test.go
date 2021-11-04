@@ -34,7 +34,6 @@ func TestMainUseCase(t *testing.T) {
 	sinks := &core.Sinks{
 		&core.Sink{
 			Type: "mock",
-			Path: "test",
 			Var: "test",
 		},
 	}
