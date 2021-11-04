@@ -10,6 +10,8 @@ import (
 	"strconv"
 )
 
+const FileSinkType = "file"
+
 // FileSinkSpec is a specialisation of the SinkSpec interface for file sink
 type FileSinkSpec struct {
 	Path string `yaml:"path" validate:"required"`
