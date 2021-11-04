@@ -2,7 +2,8 @@ package core
 
 
 // Factory is able to create interfaces of type Repository, SinkWriterPort, TransformationPort
-// and VaultAccessorPort, depending on the given type (e.g. a template-based sink as a SinkWriterPort)
+// and VaultAccessorPort, depending on the given type (e.g. a template-based sink as a SinkWriterPort).
+// It also returns the types it is able to create.
 type Factory interface {
 	// NewRepository creates a new internal Repository for variables
 	NewRepository() Repository

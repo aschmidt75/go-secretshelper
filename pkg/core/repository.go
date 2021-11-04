@@ -3,10 +3,12 @@ package core
 
 import "fmt"
 
+// RepositoryError ...
 type RepositoryError struct {
 	Reason string
 	Info string
 }
+
 func (e RepositoryError) Error() string { return fmt.Sprintf("%s: %s", e.Reason, e.Info) }
 
 var (

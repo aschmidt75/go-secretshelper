@@ -19,10 +19,8 @@ func TestMainUseCase(t *testing.T) {
 	vaults := &core.Vaults{
 		&core.Vault{
 			Name: "test",
-			Spec: core.VaultSpec{
-				Type: "mock",
-				URL: "",
-			},
+			Type: "mock",
+			Spec: core.VaultSpec{},
 		},
 	}
 	secrets := &core.Secrets{
@@ -36,7 +34,6 @@ func TestMainUseCase(t *testing.T) {
 	sinks := &core.Sinks{
 		&core.Sink{
 			Type: "mock",
-			Path: "test",
 			Var: "test",
 		},
 	}

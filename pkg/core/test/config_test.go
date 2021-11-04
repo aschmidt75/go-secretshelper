@@ -86,10 +86,8 @@ func TestValidation(t *testing.T) {
 		Vaults: []*core.Vault{
 			&core.Vault{
 				Name: "a",
-				Spec: core.VaultSpec{
-					Type: "nonex",
-					URL: "http://www.example.com",
-				},
+				Type: "nonex",
+				Spec: core.VaultSpec{},
 			},
 		},
 		Secrets: []*core.Secret{

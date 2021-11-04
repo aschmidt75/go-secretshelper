@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"gopkg.in/yaml.v2"
-	"io/ioutil"
+	"io"
+	"os"
 )
 
 // Config is the main configuration struct given by YAML input
@@ -22,28 +23,26 @@ func NewDefaultConfig() *Config {
 	return &Config{}
 }
 
-// NewConfigFromFile creates a configuration from yaml file
-func NewConfigFromFile(fileName string) (*Config, error) {
-	b, err := ioutil.ReadFile(fileName)
-	if err != nil {
-		return nil, err
-	}
+// NewConfig is the default way of reading configuration from yaml stream
+func NewConfig(in io.Reader) (*Config, error) {
+	yamlDec := yaml.NewDecoder(in)
 
 	res := NewDefaultConfig()
-	if err = yaml.Unmarshal(b, res); err != nil {
+	if err := yamlDec.Decode(res); err != nil {
 		return res, err
 	}
 
 	return res, nil
 }
 
-func (c *Config) VaultByName(vaultName string) *Vault {
-	for _, vault := range c.Vaults {
-		if vault.Name == vaultName {
-			return vault
-		}
+// NewConfigFromFile creates a configuration from yaml file
+func NewConfigFromFile(fileName string) (*Config, error) {
+	f, err := os.Open(fileName)
+	if err != nil {
+		return nil, err
 	}
-	return nil
+
+	return NewConfig(f)
 }
 
 // IsVarDefined checks if given variable name is defined, either in
@@ -82,7 +81,7 @@ func (c *Config) Validate() error {
 			return err
 		}
 
-		if v := c.VaultByName(secret.VaultName); v == nil {
+		if v := c.Vaults.GetVaultByName(secret.VaultName); v == nil {
 			return errors.New(
 				fmt.Sprintf("invalid vault %s referenced in secret %s", secret.VaultName, secret.Name))
 		}

@@ -5,22 +5,30 @@ import (
 	"fmt"
 )
 
+// Vaults is an array of Vault structs
 type Vaults []*Vault
 
+// Vault defines one source for secrets
 type Vault struct {
+	// Name of the vault, referenced by secrets
 	Name string `yaml:"name" validate:"required"`
+
+	// Type of vault
+	Type string `yaml:"type" validate:"required"`
+
+	// Detailed specification
 	Spec VaultSpec `yaml:"spec" validate:"required"`
 }
 
-type VaultSpec struct {
-	Type string `yaml:"type" validate:"required"`
-	URL string `yaml:"url" validate:"required,url"`
-}
+// VaultSpec declares details of how to connect to the vault
+type VaultSpec map[interface{}]interface{}
 
+// String creates a string representation for a vault
 func (v Vault) String() string {
-	return fmt.Sprintf("Vault:[Name=%s, Type=%s]", v.Name, v.Spec.Type)
+	return fmt.Sprintf("Vault:[Name=%s, Type=%s]", v.Name, v.Type)
 }
 
+// GetVaultByName searches for a single named vault from an array
 func (vaults *Vaults) GetVaultByName(name string) *Vault {
 	for _, vault := range *vaults {
 		if vault.Name == name {
