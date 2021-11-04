@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"gopkg.in/yaml.v2"
-	"io/ioutil"
+	"io"
+	"os"
 )
 
 // Config is the main configuration struct given by YAML input
@@ -22,19 +23,26 @@ func NewDefaultConfig() *Config {
 	return &Config{}
 }
 
-// NewConfigFromFile creates a configuration from yaml file
-func NewConfigFromFile(fileName string) (*Config, error) {
-	b, err := ioutil.ReadFile(fileName)
-	if err != nil {
-		return nil, err
-	}
+// NewConfig is the default way of reading configuration from yaml stream
+func NewConfig(in io.Reader) (*Config, error) {
+	yamlDec := yaml.NewDecoder(in)
 
 	res := NewDefaultConfig()
-	if err = yaml.Unmarshal(b, res); err != nil {
+	if err := yamlDec.Decode(res); err != nil {
 		return res, err
 	}
 
 	return res, nil
+}
+
+// NewConfigFromFile creates a configuration from yaml file
+func NewConfigFromFile(fileName string) (*Config, error) {
+	f, err := os.Open(fileName)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewConfig(f)
 }
 
 func (c *Config) VaultByName(vaultName string) *Vault {

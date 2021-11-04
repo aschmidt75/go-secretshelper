@@ -7,6 +7,7 @@ import (
 	"log"
 )
 
+// MainUseCaseImpl implements the UseCase interface
 type MainUseCaseImpl struct {
 	log *log.Logger
 }
@@ -20,7 +21,7 @@ func NewMainUseCaseImpl(l *log.Logger) UseCase {
 // RetrieveSecret pulls a single secret from a vault and puts it into a Repository
 func (m *MainUseCaseImpl) RetrieveSecret(ctx context.Context, factory Factory, defaults *Defaults, repository Repository, vault *Vault, secret *Secret) error {
 
-	va := factory.NewVaultAccessor(vault.Spec.Type)
+	va := factory.NewVaultAccessor(vault.Type)
 	if va == nil {
 		return errors.New("internal error: unable to handle vault of given type")
 	}

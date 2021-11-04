@@ -9,16 +9,14 @@ type Vaults []*Vault
 
 type Vault struct {
 	Name string `yaml:"name" validate:"required"`
+	Type string `yaml:"type" validate:"required"`
 	Spec VaultSpec `yaml:"spec" validate:"required"`
 }
 
-type VaultSpec struct {
-	Type string `yaml:"type" validate:"required"`
-	URL string `yaml:"url" validate:"required,url"`
-}
+type VaultSpec map[interface{}]interface{}
 
 func (v Vault) String() string {
-	return fmt.Sprintf("Vault:[Name=%s, Type=%s]", v.Name, v.Spec.Type)
+	return fmt.Sprintf("Vault:[Name=%s, Type=%s]", v.Name, v.Type)
 }
 
 func (vaults *Vaults) GetVaultByName(name string) *Vault {

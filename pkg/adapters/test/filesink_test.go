@@ -10,6 +10,65 @@ import (
 	"testing"
 )
 
+func TestFileSinkSpec(t *testing.T) {
+	fss, err := adapters.NewFileSinkSpec(core.SinkSpec{
+		"mode": 440,
+		"user": 0,
+		"group": "-1",
+	})
+	if err != nil {
+		t.Errorf("unexpected: %s", err)
+	}
+	if fss.Mode == nil {
+		t.Error("unexpected: got nil")
+	} else {
+		if *fss.Mode != 440 {
+			t.Errorf("expected 440, got: %#v", fss)
+		}
+	}
+	if fss.UserID == nil {
+		t.Error("unexpected: got nil")
+	} else {
+		if *fss.UserID != 0 {
+			t.Errorf("expected 0, got: %#v", *fss.UserID)
+		}
+	}
+	if fss.GroupID == nil {
+		t.Error("unexpected: got nil")
+	} else {
+		if *fss.GroupID != -1 {
+			t.Errorf("expected -1, got: %#v", fss)
+		}
+	}
+
+	fss, err = adapters.NewFileSinkSpec(core.SinkSpec{
+		"mode": "440",
+	})
+	if err != nil {
+		t.Errorf("unexpected: %s", err)
+	}
+	if fss.Mode == nil {
+		t.Error("unexpected: got nil")
+	} else {
+		if *fss.Mode != 440 {
+			t.Errorf("expected 440, got: %#v", fss)
+		}
+	}
+	if fss.UserID != nil {
+		t.Errorf("expected nil, got %#v", fss.UserID)
+	}
+	if fss.GroupID != nil {
+		t.Errorf("expected nil, got %#v", fss.UserID)
+	}
+
+	fss, err = adapters.NewFileSinkSpec(core.SinkSpec{
+		"mode": true,
+	})
+	if err == nil {
+		t.Error("Expected error, got none.")
+	}
+}
+
 func TestFileSink(t *testing.T) {
 	secrets := &core.Secrets{
 		&core.Secret{
@@ -24,6 +83,9 @@ func TestFileSink(t *testing.T) {
 			Type: "mock",
 			Path: "test.dat",
 			Var: "test",
+			Spec: core.SinkSpec{
+				"mode": "440",
+			},
 		},
 	}
 
@@ -42,6 +104,10 @@ func TestFileSink(t *testing.T) {
 	}
 	if fi.Size() != int64(len((*secrets)[0].RawContent)) {
 		t.Errorf("Invalid size")
+	}
+
+	if fi.Mode().Perm() != 440 {
+		t.Errorf("Expected mode 440, got: %#v", fi.Mode().Perm())
 	}
 
 	raw, err := afero.ReadFile(fs,(*sinks)[0].Path)
