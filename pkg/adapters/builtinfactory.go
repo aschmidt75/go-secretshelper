@@ -3,7 +3,6 @@ package adapters
 import (
 	"github.com/spf13/afero"
 	"go-secretshelper/pkg/core"
-	"go-secretshelper/pkg/core/mocks"
 	"log"
 )
 
@@ -37,19 +36,6 @@ func (f *BuiltinFactory) VaultAccessorTypes() []string {
 }
 
 func (f *BuiltinFactory) NewRepository() core.Repository {
-	return nil
-}
-
-func (f *BuiltinFactory) GetMockRepository() *mocks.MockRepository {
-	return nil
-
-}
-
-func (f *BuiltinFactory) newSinkWriterInternal(sinkType string) core.SinkWriterPort {
-	return nil
-}
-
-func (f *BuiltinFactory) GetMockSinkWriter(sinkType string) *mocks.MockSinkWriterPort {
 	return nil
 }
 
