@@ -5,7 +5,6 @@ import (
 	"github.com/spf13/afero"
 	"go-secretshelper/pkg/adapters"
 	"go-secretshelper/pkg/core"
-	"io/ioutil"
 	"log"
 	"os"
 	"reflect"
@@ -18,8 +17,7 @@ import (
 //AGE-SECRET-KEY-1KGV83XLPAU7HVC3TS7WE5GS2QG5ECYH97W9ZPPGWAYUHCTYNEGVS8NMFQP
 
 // echo '{ "test": "s3cr3t" }' | age -e -r age1dfamnuh6cwvk7c4p3nrlr027tm0urk5qqh49tq2udmxhzkltgayst7kuf3 -a
-const ageVaultFile = `
------BEGIN AGE ENCRYPTED FILE-----
+const ageVaultFile = `-----BEGIN AGE ENCRYPTED FILE-----
 YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBRTEM2NE9CQVNMSlRLSlhH
 TXZIS1lDbjBIbWhOaDVsQjBuRklBTFpWNG5FCmFvZEJOY20wZThGRHFVVC9rUTFE
 aUJ6MEYyeXpIM0VRRjUzVUY1MnJnK3cKLS0tIGcvUUVXREhHYS9hNVlNNFcxWlVh
@@ -32,7 +30,6 @@ const ageIdentity = "AGE-SECRET-KEY-1KGV83XLPAU7HVC3TS7WE5GS2QG5ECYH97W9ZPPGWAYU
 
 func setupAgeFiles(fs afero.Fs) error {
 	f, err := fs.OpenFile("vault.age", os.O_WRONLY|os.O_CREATE, 0400)
-	defer f.Close()
 	if err != nil {
 		return err
 	}
@@ -44,7 +41,6 @@ func setupAgeFiles(fs afero.Fs) error {
 	}
 
 	f2, err := fs.OpenFile("identity.age", os.O_WRONLY|os.O_CREATE, 0400)
-	defer f2.Close()
 	if err != nil {
 		return err
 	}
@@ -68,7 +64,7 @@ func TestAgeVault(t *testing.T) {
 		return
 	}
 
-	av := adapters.NewAgeVault(log.New(ioutil.Discard, "", 0), fs)
+	av := adapters.NewAgeVault(log.New(os.Stdout, "***", 0), fs)
 	if av == nil {
 		t.Error("unexpected: nil")
 	}
@@ -89,6 +85,11 @@ func TestAgeVault(t *testing.T) {
 			Type:       "secret",
 			VaultName:  "test",
 		},
+		&core.Secret{
+			Name:       "nosuchsecret",
+			Type:       "secret",
+			VaultName:  "test",
+		},
 	}
 
 	// retrieve the secret
@@ -98,8 +99,15 @@ func TestAgeVault(t *testing.T) {
 	}
 	if res == nil {
 		t.Error("Unexpected nil")
+	} else {
+		if !reflect.DeepEqual(res.RawContent,[]byte("s3cr3t")) {
+			t.Error("Unexpected RawContent")
+		}
 	}
-	if !reflect.DeepEqual(res.RawContent,[]byte("s3cr3t")) {
-		t.Error("Unexpected RawContent")
+
+	_, err = av.RetrieveSecret(context.TODO(), &core.Defaults{}, (*vaults)[0], (*secrets)[1])
+	if err == nil {
+		t.Error("Unexpected nil")
 	}
+
 }
