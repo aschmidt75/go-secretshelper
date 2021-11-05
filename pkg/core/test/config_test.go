@@ -72,8 +72,7 @@ func TestValidation(t *testing.T) {
 
 	cfg = &core.Config{
 		Vaults: []*core.Vault{
-			&core.Vault{
-			},
+			&core.Vault{},
 		},
 	}
 	err = cfg.Validate()
@@ -93,7 +92,7 @@ func TestValidation(t *testing.T) {
 		Secrets: []*core.Secret{
 			&core.Secret{
 				Name:      "b",
-				VaultName: "nonex",				// this vault is not defined above
+				VaultName: "nonex", // this vault is not defined above
 				Type:      "secret",
 			},
 		},

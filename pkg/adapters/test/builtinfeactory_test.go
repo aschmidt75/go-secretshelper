@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestBuildinFactory(t *testing.T) {
+func TestBuiltinFactory(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	bif := adapters.NewBuiltinFactory(log.New(ioutil.Discard, "", 0), fs)
 

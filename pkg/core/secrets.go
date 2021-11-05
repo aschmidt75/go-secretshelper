@@ -11,7 +11,10 @@ type Secret struct {
 	VaultName string `yaml:"vault" validate:"required"`
 	Type      string `yaml:"type" validate:"required"`
 
+	// RawContent contains the secret
 	RawContent []byte
+	// RawContentType is the content-type of RawContent
+	RawContentType string
 }
 
 // String returns a string representation of a secret
@@ -20,5 +23,5 @@ func (s Secret) String() string {
 	if len(s.RawContent) > 0 {
 		set = true
 	}
-	return fmt.Sprintf("Secret:[name=%s, Type=%s, set=%t]", s.Name, s.Type, set)
+	return fmt.Sprintf("Secret:[name=%s, Type=%s, set=%t, content-type=%s]", s.Name, s.Type, set, s.RawContentType)
 }

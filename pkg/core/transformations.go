@@ -9,7 +9,7 @@ type Transformations []Transformation
 // Transformation describe a single transformation spec, from
 // a named secred (Var) to a new, transformed one (ToVar)
 type Transformation struct {
-	Var string `yaml:"var" validate:"required"`
+	Var   string `yaml:"var" validate:"required"`
 	ToVar string `yaml:"toVar" validate:""`
 }
 

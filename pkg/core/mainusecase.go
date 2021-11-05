@@ -61,7 +61,7 @@ func (m *MainUseCaseImpl) WriteToSink(ctx context.Context, factory Factory, defa
 	}
 
 	// write to sink and be done
-	err = sw.Write(ctx,defaults,secret,sink)
+	err = sw.Write(ctx, defaults, secret, sink)
 	if err != nil {
 		return err
 	}
@@ -69,6 +69,7 @@ func (m *MainUseCaseImpl) WriteToSink(ctx context.Context, factory Factory, defa
 	return nil
 }
 
+// Process runs the main use case
 func (m *MainUseCaseImpl) Process(ctx context.Context, factory Factory, defaults *Defaults,
 	vaults *Vaults, secrets *Secrets, transformations *Transformations, sinks *Sinks) error {
 
@@ -86,10 +87,10 @@ func (m *MainUseCaseImpl) Process(ctx context.Context, factory Factory, defaults
 	repo := factory.NewRepository()
 
 	m.log.Printf("Pulling secrets from vaults")
-	for _, secret := range *secrets	{
+	for _, secret := range *secrets {
 		vault := vaults.GetVaultByName(secret.VaultName)
 		if vault == nil {
-			return errors.New(fmt.Sprintf("No such vault: %s", secret.VaultName))
+			return fmt.Errorf("No such vault: %s", secret.VaultName)
 		}
 		if err := m.RetrieveSecret(ctx, factory, defaults, repo, vault, secret); err != nil {
 			return err
@@ -99,7 +100,7 @@ func (m *MainUseCaseImpl) Process(ctx context.Context, factory Factory, defaults
 	// Applying transformations
 	m.log.Printf("Applying transformations")
 	if transformations != nil {
-		for _, secret := range *secrets	{
+		for _, secret := range *secrets {
 			if err := m.Transform(ctx, factory, defaults, repo, secret, transformations); err != nil {
 				return err
 			}
@@ -118,4 +119,3 @@ func (m *MainUseCaseImpl) Process(ctx context.Context, factory Factory, defaults
 
 	return nil
 }
-

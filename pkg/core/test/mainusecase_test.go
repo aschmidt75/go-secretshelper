@@ -25,8 +25,8 @@ func TestMainUseCase(t *testing.T) {
 	}
 	secrets := &core.Secrets{
 		&core.Secret{
-			Name: "test",
-			Type: "secret",
+			Name:      "test",
+			Type:      "secret",
 			VaultName: "test",
 		},
 	}
@@ -34,7 +34,7 @@ func TestMainUseCase(t *testing.T) {
 	sinks := &core.Sinks{
 		&core.Sink{
 			Type: "mock",
-			Var: "test",
+			Var:  "test",
 		},
 	}
 	defaults := &core.Defaults{}
@@ -51,6 +51,5 @@ func TestMainUseCase(t *testing.T) {
 	if err != nil {
 		t.Errorf("Unexpected: %s", err)
 	}
-
 
 }
