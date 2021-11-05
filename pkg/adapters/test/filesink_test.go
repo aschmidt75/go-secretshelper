@@ -12,9 +12,9 @@ import (
 
 func TestFileSinkSpec(t *testing.T) {
 	fss, err := adapters.NewFileSinkSpec(core.SinkSpec{
-		"path": "tmp",
-		"mode": 440,
-		"user": 0,
+		"path":  "tmp",
+		"mode":  440,
+		"user":  0,
 		"group": "-1",
 	})
 	if err != nil {
@@ -88,7 +88,7 @@ func TestFileSink(t *testing.T) {
 	sinks := &core.Sinks{
 		&core.Sink{
 			Type: "mock",
-			Var: "test",
+			Var:  "test",
 			Spec: core.SinkSpec{
 				"path": p,
 				"mode": "440",
@@ -117,7 +117,7 @@ func TestFileSink(t *testing.T) {
 		t.Errorf("Expected mode 440, got: %#v", fi.Mode().Perm())
 	}
 
-	raw, err := afero.ReadFile(fs,p)
+	raw, err := afero.ReadFile(fs, p)
 	if err != nil {
 		t.Errorf("Unexpected: %s", err)
 	}

@@ -44,4 +44,3 @@ type VaultAccessorPort interface {
 	// RetrieveSecret retrieves a secret from given vault
 	RetrieveSecret(context.Context, *Defaults, *Vault, *Secret) (*Secret, error)
 }
-

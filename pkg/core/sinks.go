@@ -10,8 +10,8 @@ type Sinks []*Sink
 
 // Sink defines where a secret, indicated by Var, should be written to.
 type Sink struct {
-	Type string `yaml:"type" validate:"required"`
-	Var string `yaml:"var" validate:"required"`
+	Type string   `yaml:"type" validate:"required"`
+	Var  string   `yaml:"var" validate:"required"`
 	Spec SinkSpec `yaml:"spec" validate:""`
 }
 
@@ -20,7 +20,7 @@ type SinkSpec map[interface{}]interface{}
 
 // String creates a string representation of a sink
 func (s Sink) String() string {
-	return fmt.Sprintf("Sink:[Var=%s, Type=%s]", s.Var, s. Type)
+	return fmt.Sprintf("Sink:[Var=%s, Type=%s]", s.Var, s.Type)
 }
 
 // SinkWriterPort is able to write a secret into a defined sink

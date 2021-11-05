@@ -10,47 +10,60 @@ import (
 // the adapters package
 type BuiltinFactory struct {
 	log *log.Logger
-	fs afero.Fs
+	fs  afero.Fs
 }
 
 // NewBuiltinFactory creates the Builtin Factory
 func NewBuiltinFactory(log *log.Logger, fs afero.Fs) *BuiltinFactory {
 	return &BuiltinFactory{
 		log: log,
-		fs: fs,
+		fs:  fs,
 	}
 }
 
+// SinkTypes returns valid sink types
 func (f *BuiltinFactory) SinkTypes() []string {
 	return []string{
 		FileSinkType,
 	}
 }
 
+// TransformationTypes returns valid transformation types
 func (f *BuiltinFactory) TransformationTypes() []string {
 	return []string{}
 }
 
+// VaultAccessorTypes returns valid vault types
 func (f *BuiltinFactory) VaultAccessorTypes() []string {
-	return []string{}
+	return []string{
+		AgeVaultType,
+	}
 }
 
+// NewRepository creates a new repository
 func (f *BuiltinFactory) NewRepository() core.Repository {
 	return nil
 }
 
+// NewSinkWriter creates a new sink writer for a supported type
 func (f *BuiltinFactory) NewSinkWriter(sinkType string) core.SinkWriterPort {
 	switch sinkType {
-	case FileSinkType: return NewFileSink(f.log, f.fs)
+	case FileSinkType:
+		return NewFileSink(f.log, f.fs)
 	}
 	return nil
 }
 
+// NewTransformation creates a new transformation for a supported type
 func (f *BuiltinFactory) NewTransformation(transformationType string) core.TransformationPort {
 	return nil
 }
 
+// NewVaultAccessor creates a new vault accessor for a supported type
 func (f *BuiltinFactory) NewVaultAccessor(vaultType string) core.VaultAccessorPort {
+	switch vaultType {
+	case AgeVaultType:
+		return NewAgeVault(f.log, f.fs)
+	}
 	return nil
 }
-

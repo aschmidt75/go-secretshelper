@@ -1,7 +1,6 @@
 package core
 
 import (
-	"errors"
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"gopkg.in/yaml.v2"
@@ -11,11 +10,11 @@ import (
 
 // Config is the main configuration struct given by YAML input
 type Config struct {
-	Defaults Defaults `yaml:"defaults" validate:""`
-	Vaults Vaults `yaml:"vaults" validate:"required,dive"`
-	Secrets Secrets `yaml:"secrets" validate:"required,dive"`
+	Defaults        Defaults        `yaml:"defaults" validate:""`
+	Vaults          Vaults          `yaml:"vaults" validate:"required,dive"`
+	Secrets         Secrets         `yaml:"secrets" validate:"required,dive"`
 	Transformations Transformations `yaml:"transformations" validate:""`
-	Sinks Sinks `yaml:"sinks" validate:"required,dive"`
+	Sinks           Sinks           `yaml:"sinks" validate:"required,dive"`
 }
 
 // NewDefaultConfig returns a configuration struct with valid default settings
@@ -47,7 +46,7 @@ func NewConfigFromFile(fileName string) (*Config, error) {
 
 // IsVarDefined checks if given variable name is defined, either in
 // secrets or as the result of a transformation step
-func (c* Config) IsVarDefined(varName string) bool {
+func (c *Config) IsVarDefined(varName string) bool {
 	for _, secret := range c.Secrets {
 		if secret.Name == varName {
 			return true
@@ -82,8 +81,7 @@ func (c *Config) Validate() error {
 		}
 
 		if v := c.Vaults.GetVaultByName(secret.VaultName); v == nil {
-			return errors.New(
-				fmt.Sprintf("invalid vault %s referenced in secret %s", secret.VaultName, secret.Name))
+			return fmt.Errorf("invalid vault %s referenced in secret %s", secret.VaultName, secret.Name)
 		}
 	}
 
@@ -93,8 +91,7 @@ func (c *Config) Validate() error {
 		}
 
 		if !c.IsVarDefined(sink.Var) {
-			return errors.New(
-				fmt.Sprintf("invalid variable %s referenced in a sink", sink.Var))
+			return fmt.Errorf("invalid variable %s referenced in a sink", sink.Var)
 		}
 	}
 

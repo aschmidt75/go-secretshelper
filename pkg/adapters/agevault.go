@@ -17,27 +17,34 @@ import (
 	"strings"
 )
 
-const AgePassphrase = "SECRETSHELPER_AGE_PASSPHRASE"
+// AgeVaultType is the type name for age-based vaults
+const AgeVaultType = "age-file"
 
 // AgeVault is a core.VaultAccessorPort which pulls secrets from an age-encrypted file
+// Currently armored files and non-encrypted age-identites are supported.
 type AgeVault struct {
 	log *log.Logger
-	fs afero.Fs
+	fs  afero.Fs
 }
 
 // NewAgeVault creates a new age vault
 func NewAgeVault(log *log.Logger, fs afero.Fs) *AgeVault {
 	return &AgeVault{
 		log: log,
-		fs: fs,
+		fs:  fs,
 	}
 }
 
+// AgeVaultSpec describes access to both age and identity files
 type AgeVaultSpec struct {
+	// Path points to armored, age-encrypted file
 	Path string
+
+	// IdentityFile points to unencrypted age identity file
 	IdentityFile string
 }
 
+// NewAgeVaultSpec creates a new vault spec from the generic interface map
 func NewAgeVaultSpec(in map[interface{}]interface{}) (AgeVaultSpec, error) {
 	var res AgeVaultSpec
 
@@ -95,6 +102,8 @@ func (v *AgeVault) readFromAgeFile(path, identity string) ([]byte, error) {
 	return []byte(b.String()), nil
 }
 
+// RetrieveSecret decodes both identity and age file according to vault.Spec and
+// reads the secret.
 func (v *AgeVault) RetrieveSecret(ctx context.Context, defaults *core.Defaults,
 	vault *core.Vault, secret *core.Secret) (*core.Secret, error) {
 
@@ -119,25 +128,25 @@ func (v *AgeVault) RetrieveSecret(ctx context.Context, defaults *core.Defaults,
 		if err != nil {
 			// treat the secret as-is
 			return &core.Secret{
-				RawContent: res,
+				RawContent:     res,
 				RawContentType: "",
-				Name: secret.Name,
-				Type: secret.Type,
-				VaultName: secret.VaultName,
+				Name:           secret.Name,
+				Type:           secret.Type,
+				VaultName:      secret.VaultName,
 			}, nil
 		}
 	}
 	content, found := data[secret.Name]
 	if !found {
-		return nil, errors.New(fmt.Sprintf("unable to find secret %s in vault %s", secret.Name, vault.Name))
+		return nil, fmt.Errorf("unable to find secret %s in vault %s", secret.Name, vault.Name)
 	}
 
 	return &core.Secret{
-		RawContent: []byte(content),
+		RawContent:     []byte(content),
 		RawContentType: "",
-		Name: secret.Name,
-		Type: secret.Type,
-		VaultName: secret.VaultName,
+		Name:           secret.Name,
+		Type:           secret.Type,
+		VaultName:      secret.VaultName,
 	}, nil
 }
 

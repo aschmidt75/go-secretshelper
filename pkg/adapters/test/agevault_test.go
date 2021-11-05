@@ -27,7 +27,6 @@ Ev/8vDZnPjkXXLuwpXGWukIlEwms/SwA9fw86p0=
 `
 const ageIdentity = "AGE-SECRET-KEY-1KGV83XLPAU7HVC3TS7WE5GS2QG5ECYH97W9ZPPGWAYUHCTYNEGVS8NMFQP"
 
-
 func setupAgeFiles(fs afero.Fs) error {
 	f, err := fs.OpenFile("vault.age", os.O_WRONLY|os.O_CREATE, 0400)
 	if err != nil {
@@ -74,21 +73,21 @@ func TestAgeVault(t *testing.T) {
 			Name: "test",
 			Type: "age-file",
 			Spec: core.VaultSpec{
-				"path": "vault.age",
+				"path":     "vault.age",
 				"identity": "identity.age",
 			},
 		},
 	}
 	secrets := &core.Secrets{
 		&core.Secret{
-			Name:       "test",
-			Type:       "secret",
-			VaultName:  "test",
+			Name:      "test",
+			Type:      "secret",
+			VaultName: "test",
 		},
 		&core.Secret{
-			Name:       "nosuchsecret",
-			Type:       "secret",
-			VaultName:  "test",
+			Name:      "nosuchsecret",
+			Type:      "secret",
+			VaultName: "test",
 		},
 	}
 
@@ -100,7 +99,7 @@ func TestAgeVault(t *testing.T) {
 	if res == nil {
 		t.Error("Unexpected nil")
 	} else {
-		if !reflect.DeepEqual(res.RawContent,[]byte("s3cr3t")) {
+		if !reflect.DeepEqual(res.RawContent, []byte("s3cr3t")) {
 			t.Error("Unexpected RawContent")
 		}
 	}

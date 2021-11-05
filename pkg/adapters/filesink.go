@@ -10,27 +10,28 @@ import (
 	"strconv"
 )
 
+// FileSinkType is the valid type name for a file sink
 const FileSinkType = "file"
 
 // FileSinkSpec is a specialisation of the SinkSpec interface for file sink
 type FileSinkSpec struct {
-	Path string `yaml:"path" validate:"required"`
-	Mode *uint32 `yaml:"mode,omitempty" validate:"required"`
-	UserID  *int `yaml:"user,omitempty" validate:"required"`
-	GroupID *int `yaml:"group,omitempty" validate:"required"`
+	Path    string  `yaml:"path" validate:"required"`
+	Mode    *uint32 `yaml:"mode,omitempty" validate:"required"`
+	UserID  *int    `yaml:"user,omitempty" validate:"required"`
+	GroupID *int    `yaml:"group,omitempty" validate:"required"`
 }
 
 // FileSink is a file-based sink endpoint, where secrets are written to files
 type FileSink struct {
 	log *log.Logger
-	fs afero.Fs
+	fs  afero.Fs
 }
 
 // NewFileSink creates a new FileSink, based on given Afero file system and a logger
 func NewFileSink(log *log.Logger, fs afero.Fs) *FileSink {
 	return &FileSink{
 		log: log,
-		fs: fs,
+		fs:  fs,
 	}
 }
 
@@ -60,7 +61,7 @@ func NewFileSinkSpec(in map[interface{}]interface{}) (FileSinkSpec, error) {
 	if ex {
 		vn, err := stringOrIntToI(v)
 		if err != nil {
-			return res,  errors.New("user parameter in file sink spec must be string or integer")
+			return res, errors.New("user parameter in file sink spec must be string or integer")
 		}
 		res.UserID = &vn
 	}
@@ -68,7 +69,7 @@ func NewFileSinkSpec(in map[interface{}]interface{}) (FileSinkSpec, error) {
 	if ex {
 		vn, err := stringOrIntToI(v)
 		if err != nil {
-			return res,  errors.New("group parameter in file sink spec must be string or integer")
+			return res, errors.New("group parameter in file sink spec must be string or integer")
 		}
 		res.GroupID = &vn
 	}
@@ -138,4 +139,3 @@ func (s *FileSink) Write(ctx context.Context, defaults *core.Defaults, secret *c
 
 	return nil
 }
-

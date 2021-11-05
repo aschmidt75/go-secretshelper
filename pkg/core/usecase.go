@@ -19,5 +19,4 @@ type UseCase interface {
 	// applying transformations and writing to sinks. It pulls port implementations from
 	// given Factory.
 	Process(context.Context, Factory, *Defaults, *Vaults, *Secrets, *Transformations, *Sinks) error
-
 }
