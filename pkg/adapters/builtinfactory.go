@@ -42,7 +42,7 @@ func (f *BuiltinFactory) VaultAccessorTypes() []string {
 
 // NewRepository creates a new repository
 func (f *BuiltinFactory) NewRepository() core.Repository {
-	return nil
+	return NewDefaultRepository()
 }
 
 // NewSinkWriter creates a new sink writer for a supported type
