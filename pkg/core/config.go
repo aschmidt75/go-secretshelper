@@ -64,14 +64,26 @@ func (c *Config) IsVarDefined(varName string) bool {
 
 // Validate validates a configuration using the validator and
 // additional cross checks.
-// TODO inject Factory for list of valid types.
-func (c *Config) Validate() error {
+func (c *Config) Validate(f Factory) error {
 	v := validator.New()
+
+	st := make(map[string]struct{})
+	for _, e := range f.SinkTypes() {
+		st[e] = struct{}{}
+	}
+	vat := make(map[string]struct{})
+	for _, e := range f.VaultAccessorTypes() {
+		vat[e] = struct{}{}
+	}
 
 	//
 	for _, vault := range c.Vaults {
 		if err := v.Struct(vault); err != nil {
 			return err
+		}
+
+		if _, ex := vat[vault.Type]; !ex {
+			return fmt.Errorf("unknown vault type: %s in vault: %s", vault.Type, vault.Name)
 		}
 	}
 
@@ -88,6 +100,10 @@ func (c *Config) Validate() error {
 	for _, sink := range c.Sinks {
 		if err := v.Struct(sink); err != nil {
 			return err
+		}
+
+		if _, ex := st[sink.Type]; !ex {
+			return fmt.Errorf("unknown sink type: %s", sink.Type)
 		}
 
 		if !c.IsVarDefined(sink.Var) {

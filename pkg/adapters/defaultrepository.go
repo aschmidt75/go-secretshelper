@@ -19,6 +19,7 @@ func NewDefaultRepository() *DefaultRepository {
 	}
 }
 
+// Put places varName with content in repository
 func (r *DefaultRepository) Put(varName string, content interface{}) {
 	r.m.Lock()
 	defer r.m.Unlock()
@@ -26,6 +27,7 @@ func (r *DefaultRepository) Put(varName string, content interface{}) {
 	r.items[varName] = content
 }
 
+// Get returns varName or an error
 func (r *DefaultRepository) Get(varName string) (interface{}, error) {
 	r.m.Lock()
 	defer r.m.Unlock()
