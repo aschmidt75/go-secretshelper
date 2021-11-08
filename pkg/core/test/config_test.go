@@ -3,6 +3,7 @@ package test
 import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
+	"github.com/golang/mock/gomock"
 	"go-secretshelper/pkg/core"
 	"testing"
 )
@@ -17,7 +18,7 @@ func TestConfig(t *testing.T) {
 		t.Errorf("Expected error, got nil")
 	}
 
-	cfg, err = core.NewConfigFromFile("../../../suppl/fixtures/fixture-1.yaml")
+	cfg, err = core.NewConfigFromFile("../../../tests/fixtures/fixture-1.yaml")
 	if err != nil {
 		t.Errorf("Expected err=null, got err=%s", err)
 	}
@@ -54,7 +55,7 @@ func DumpValidationErrors(err error) {
 }
 
 func TestValidation(t *testing.T) {
-	cfg, err := core.NewConfigFromFile("../../../suppl/fixtures/fixture-1.yaml")
+	cfg, err := core.NewConfigFromFile("../../../tests/fixtures/fixture-1.yaml")
 	if err != nil {
 		t.Errorf("Expected err=null, got err=%s", err)
 	}
@@ -62,7 +63,12 @@ func TestValidation(t *testing.T) {
 		t.Error("Expected config result, got nil")
 	}
 
-	err = cfg.Validate()
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mf := NewMockFactory(mockCtrl, t)
+
+	err = cfg.Validate(mf)
 	if err != nil {
 		t.Errorf("Expected nil got err=%#v", err)
 		DumpValidationErrors(err)
@@ -75,7 +81,7 @@ func TestValidation(t *testing.T) {
 			&core.Vault{},
 		},
 	}
-	err = cfg.Validate()
+	err = cfg.Validate(mf)
 	if err == nil {
 		t.Errorf("Expected validation error, got nil")
 	}
@@ -97,7 +103,7 @@ func TestValidation(t *testing.T) {
 			},
 		},
 	}
-	err = cfg.Validate()
+	err = cfg.Validate(mf)
 	if err == nil {
 		t.Errorf("Expected validation error, got nil")
 	}

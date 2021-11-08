@@ -17,6 +17,12 @@ var (
 	date    = "unknown"
 )
 
+const (
+	ExitCodeOk                 = 0
+	ExitCodeNoOrUnknownCommand = 1
+	ExitCodeInvalidConfig = 2
+)
+
 func usage() {
 	fmt.Println("Usage: go-secretshelper [-v] [-c config] <command>")
 	fmt.Println("where commands are")
@@ -39,13 +45,13 @@ func main() {
 	values := flag.Args()
 	if len(values) == 0 {
 		usage()
-		os.Exit(1)
+		os.Exit(ExitCodeNoOrUnknownCommand)
 	}
 
 	switch values[0] {
 	case "version":
 		fmt.Printf("%s (%s)\n", commit, date)
-		os.Exit(0)
+		os.Exit(ExitCodeOk)
 
 	case "run":
 
@@ -53,22 +59,22 @@ func main() {
 		configFlag := fs.String("c", "", "configuration file")
 
 		if err := fs.Parse(values[1:]); err != nil {
-			println(err)
-			os.Exit(1)
+			fmt.Fprintf(os.Stderr, "error parsind commands: %s\n", err)
+			os.Exit(ExitCodeNoOrUnknownCommand)
 		}
 
 		// read config
 		config, err := core.NewConfigFromFile(*configFlag)
 		if err != nil {
 			fmt.Printf("Unable to read config from file %s: %s\n", *configFlag, err)
-			os.Exit(1)
+			os.Exit(ExitCodeInvalidConfig)
 		}
 
 		// validate
 		f := adapters.NewBuiltinFactory(l, afero.NewOsFs())
 		if err := config.Validate(f); err != nil {
-			fmt.Printf("Error validating configuration: %s\n", err)
-			os.Exit(2)
+			fmt.Fprintf(os.Stderr, "Error validating configuration: %s\n", err)
+			os.Exit(ExitCodeInvalidConfig)
 		}
 
 		// run
@@ -83,9 +89,13 @@ func main() {
 
 		if err != nil {
 			fmt.Println(err)
-			os.Exit(1)
+			os.Exit(4)
 		}
-		os.Exit(0)
+		os.Exit(ExitCodeOk)
+	default:
+		fmt.Fprintf(os.Stderr, "unkown command: %s\n", values[0])
+		usage()
+		os.Exit(ExitCodeNoOrUnknownCommand)
 	}
 
 }

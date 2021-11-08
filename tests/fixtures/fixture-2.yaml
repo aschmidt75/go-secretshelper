@@ -2,8 +2,8 @@ vaults:
   - name: kv
     type: age-file
     spec:
-      path: ./suppl/fixtures/test-agefile
-      identity: ./suppl/fixtures/test-identity
+      path: ./fixtures/test-agefile
+      identity: ./fixtures/test-identity
 
 secrets:
   - type: secret
