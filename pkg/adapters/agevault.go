@@ -47,18 +47,25 @@ type AgeVaultSpec struct {
 // NewAgeVaultSpec creates a new vault spec from the generic interface map
 func NewAgeVaultSpec(in map[interface{}]interface{}) (AgeVaultSpec, error) {
 	var res AgeVaultSpec
+	var ok bool
 
 	v, ex := in["path"]
 	if !ex {
 		return res, errors.New("must provide a path element for an age-based vault spec")
 	}
-	res.Path = v.(string)
+	res.Path, ok = v.(string)
+	if !ok {
+		return res, errors.New("must provide a path element for an age-based vault spec")
+	}
 
 	v, ex = in["identity"]
 	if !ex {
 		return res, errors.New("must provide an identity element for an age-based vault spec")
 	}
-	res.IdentityFile = v.(string)
+	res.IdentityFile, ok = v.(string)
+	if !ok {
+		return res, errors.New("must provide a identity element for an age-based vault spec")
+	}
 
 	return res, nil
 }

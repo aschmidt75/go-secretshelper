@@ -50,7 +50,7 @@ func (mr *MockUseCaseMockRecorder) Process(arg0, arg1, arg2, arg3, arg4, arg5, a
 }
 
 // RetrieveSecret mocks base method.
-func (m *MockUseCase) RetrieveSecret(arg0 context.Context, arg1 core.Factory, arg2 *core.Defaults, arg5 core.Repository, arg3 *core.Vault, arg4 *core.Secret) error {
+func (m *MockUseCase) RetrieveSecret(arg0 context.Context, arg1 core.Factory, arg2 *core.Defaults, arg3 core.Repository, arg4 *core.Vault, arg5 *core.Secret) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RetrieveSecret", arg0, arg1, arg2, arg3, arg4, arg5)
 	ret0, _ := ret[0].(error)
@@ -78,7 +78,7 @@ func (mr *MockUseCaseMockRecorder) Transform(arg0, arg1, arg2, arg3, arg4, arg5 
 }
 
 // WriteToSink mocks base method.
-func (m *MockUseCase) WriteToSink(arg0 context.Context, arg1 core.Factory, arg2 *core.Defaults, arg4 core.Repository, arg3 *core.Sink) error {
+func (m *MockUseCase) WriteToSink(arg0 context.Context, arg1 core.Factory, arg2 *core.Defaults, arg3 core.Repository, arg4 *core.Sink) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WriteToSink", arg0, arg1, arg2, arg3, arg4)
 	ret0, _ := ret[0].(error)

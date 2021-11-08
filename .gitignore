@@ -16,3 +16,5 @@
 
 BACKLOG.md
 .idea/
+dist/
+*.dat

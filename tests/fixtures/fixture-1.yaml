@@ -10,7 +10,7 @@ secrets:
     name: databasePwd
 
 sinks:
-  - type: file
+  - type: mock
     var: databasePwd
     spec:
       path: ./dbpwd.txt
