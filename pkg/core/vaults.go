@@ -17,7 +17,7 @@ type Vault struct {
 	Type string `yaml:"type" validate:"required"`
 
 	// Detailed specification
-	Spec VaultSpec `yaml:"spec" validate:"required"`
+	Spec VaultSpec `yaml:"spec" validate:""`
 }
 
 // VaultSpec declares details of how to connect to the vault

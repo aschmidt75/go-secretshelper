@@ -18,3 +18,5 @@ BACKLOG.md
 .idea/
 dist/
 *.dat
+
+tests-internal/

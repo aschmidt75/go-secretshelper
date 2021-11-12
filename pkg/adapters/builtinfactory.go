@@ -37,12 +37,13 @@ func (f *BuiltinFactory) TransformationTypes() []string {
 func (f *BuiltinFactory) VaultAccessorTypes() []string {
 	return []string{
 		AgeVaultType,
+		AzureKeyVaultType,
 	}
 }
 
 // NewRepository creates a new repository
 func (f *BuiltinFactory) NewRepository() core.Repository {
-	return NewDefaultRepository()
+	return NewBuiltinRepository()
 }
 
 // NewSinkWriter creates a new sink writer for a supported type
@@ -64,6 +65,8 @@ func (f *BuiltinFactory) NewVaultAccessor(vaultType string) core.VaultAccessorPo
 	switch vaultType {
 	case AgeVaultType:
 		return NewAgeVault(f.log, f.fs)
+	case AzureKeyVaultType:
+		return NewAzureKeyVault(f.log)
 	}
 	return nil
 }

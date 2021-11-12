@@ -18,8 +18,13 @@ var (
 )
 
 const (
+	// ExitCodeOk is ok
 	ExitCodeOk                 = 0
+
+	// ExitCodeNoOrUnknownCommand we're not able to run the command
 	ExitCodeNoOrUnknownCommand = 1
+
+	// ExitCodeInvalidConfig something wrong with config
 	ExitCodeInvalidConfig = 2
 )
 
