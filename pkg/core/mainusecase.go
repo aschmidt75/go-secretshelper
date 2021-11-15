@@ -90,7 +90,7 @@ func (m *MainUseCaseImpl) Process(ctx context.Context, factory Factory, defaults
 	for _, secret := range *secrets {
 		vault := vaults.GetVaultByName(secret.VaultName)
 		if vault == nil {
-			return fmt.Errorf("No such vault: %s", secret.VaultName)
+			return fmt.Errorf("no such vault: %s", secret.VaultName)
 		}
 		if err := m.RetrieveSecret(ctx, factory, defaults, repo, vault, secret); err != nil {
 			return err

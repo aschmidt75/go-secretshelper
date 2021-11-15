@@ -99,7 +99,3 @@ func main() {
 	}
 
 }
-
-func createLogger() *log.Logger {
-	return log.Default()
-}

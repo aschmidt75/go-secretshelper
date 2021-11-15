@@ -7,14 +7,26 @@ type Secrets []*Secret
 
 // Secret defines a named secrets, referenced in a named Vault
 type Secret struct {
+	// Name of the secret within the vault
 	Name      string `yaml:"name" validate:"required"`
+
+	// VaultName specifies in which vault the secret is stored
 	VaultName string `yaml:"vault" validate:"required"`
-	Type      string `yaml:"type" validate:"required"`
+
+	// Type of secret
+	Type      string `yaml:"type" validate:"required,valid-secret-type"`
 
 	// RawContent contains the secret
 	RawContent []byte
+
 	// RawContentType is the content-type of RawContent
 	RawContentType string
+}
+
+func ValidSecretTypes() []string {
+	return []string{
+		"secret",
+	}
 }
 
 // String returns a string representation of a secret
