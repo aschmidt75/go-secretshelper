@@ -36,7 +36,7 @@ func (m *MockTransformationPort) EXPECT() *MockTransformationPortMockRecorder {
 }
 
 // ProcessSecret mocks base method.
-func (m *MockTransformationPort) ProcessSecret(arg0 context.Context, arg1 *core.Defaults, arg2 *core.Secret, arg3 *core.Transformation) (*core.Secret, error) {
+func (m *MockTransformationPort) ProcessSecret(arg0 context.Context, arg1 *core.Defaults, arg2 *core.Secrets, arg3 *core.Transformation) (*core.Secret, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ProcessSecret", arg0, arg1, arg2, arg3)
 	ret0, _ := ret[0].(*core.Secret)

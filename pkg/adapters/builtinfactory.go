@@ -30,7 +30,9 @@ func (f *BuiltinFactory) SinkTypes() []string {
 
 // TransformationTypes returns valid transformation types
 func (f *BuiltinFactory) TransformationTypes() []string {
-	return []string{}
+	return []string{
+		TemplateTransformationType,
+	}
 }
 
 // VaultAccessorTypes returns valid vault types
@@ -57,6 +59,10 @@ func (f *BuiltinFactory) NewSinkWriter(sinkType string) core.SinkWriterPort {
 
 // NewTransformation creates a new transformation for a supported type
 func (f *BuiltinFactory) NewTransformation(transformationType string) core.TransformationPort {
+	switch transformationType {
+	case TemplateTransformationType:
+        return NewTemplateTransformation(f.log)
+	}
 	return nil
 }
 

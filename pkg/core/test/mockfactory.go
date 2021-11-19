@@ -15,6 +15,7 @@ type MockFactory struct {
 	repo   *mocks.MockRepository
 	vaults map[string]*mocks.MockVaultAccessorPort
 	sinks  map[string]*mocks.MockSinkWriterPort
+	transformations map[string]*mocks.MockTransformationPort
 }
 
 // NewMockFactory creates a new mock factors
@@ -24,12 +25,14 @@ func NewMockFactory(mockCtrl *gomock.Controller, t *testing.T) *MockFactory {
 		t:        t,
 		vaults:   make(map[string]*mocks.MockVaultAccessorPort),
 		sinks:    make(map[string]*mocks.MockSinkWriterPort),
+		transformations: make(map[string]*mocks.MockTransformationPort),
 		repo:     mocks.NewMockRepository(mockCtrl),
 	}
 
 	// auto set up mock port
 	mf.newVaultAccessorInternal("mock")
 	mf.newSinkWriterInternal("mock")
+	mf.newTransformationInternal("mock")
 
 	return mf
 }
@@ -83,7 +86,19 @@ func (df *MockFactory) NewSinkWriter(sinkType string) core.SinkWriterPort {
 
 // NewTransformation creates a new transformation for a supported type
 func (df *MockFactory) NewTransformation(transformationType string) core.TransformationPort {
-	return mocks.NewMockTransformationPort(df.mockCtrl)
+	return df.transformations[transformationType]
+}
+
+func (df *MockFactory) newTransformationInternal(transformationType string) core.TransformationPort {
+	s := mocks.NewMockTransformationPort(df.mockCtrl)
+	df.transformations[transformationType] = s
+	return s
+}
+
+
+// GetMockTransformation returns the mock transformation for a given type
+func (df *MockFactory) GetMockTransformation(transformationType string) *mocks.MockTransformationPort {
+    return df.transformations[transformationType]
 }
 
 // NewVaultAccessor creates a new vault accessor for a supported type

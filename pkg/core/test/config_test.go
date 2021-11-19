@@ -5,6 +5,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/golang/mock/gomock"
 	"go-secretshelper/pkg/core"
+	"strings"
 	"testing"
 )
 
@@ -13,18 +14,46 @@ func TestConfig(t *testing.T) {
 		t.Error("Must provide a default config")
 	}
 
-	cfg, err := core.NewConfigFromFile("no.such.config.json")
+	_, err := core.NewConfigFromFile("no.such.config.json")
 	if err == nil {
 		t.Errorf("Expected error, got nil")
 	}
 
-	cfg, err = core.NewConfigFromFile("../../../tests/fixtures/fixture-1.yaml")
+	cfg, err := core.NewConfigFromFile("../../../tests/fixtures/fixture-1.yaml")
 	if err != nil {
-		t.Errorf("Expected err=null, got err=%s", err)
+		t.Errorf("Expected err=nil, got err=%s", err)
 	}
 	if cfg == nil {
 		t.Error("Expected config result, got nil")
 	}
+
+	inp := `
+vaults:
+  - name: kv1
+    type: mock
+
+secrets:
+  - type: secret
+    vault: kv1
+    name: test
+
+sinks:
+  - type: mock
+    var: test
+    spec:
+      path: ./test.txt
+      mode: 400
+      user: 1000
+`
+
+	cfg, err = core.NewConfig(strings.NewReader(inp))
+	if err != nil {
+		t.Errorf("Expected err=nil, got err=%s", err)
+	}
+	if cfg == nil {
+		t.Error("Expected config result, got nil")
+	}
+
 }
 
 func DumpValidationErrors(err error) {
@@ -78,7 +107,7 @@ func TestValidation(t *testing.T) {
 
 	cfg = &core.Config{
 		Vaults: []*core.Vault{
-			&core.Vault{},
+			{},
 		},
 	}
 	err = cfg.Validate(mf)
@@ -89,20 +118,168 @@ func TestValidation(t *testing.T) {
 	// referential validation
 	cfg = &core.Config{
 		Vaults: []*core.Vault{
-			&core.Vault{
+			{
 				Name: "a",
 				Type: "nonex",
 				Spec: core.VaultSpec{},
 			},
 		},
 		Secrets: []*core.Secret{
-			&core.Secret{
+			{
 				Name:      "b",
 				VaultName: "nonex", // this vault is not defined above
 				Type:      "secret",
 			},
 		},
 	}
+	err = cfg.Validate(mf)
+	if err == nil {
+		t.Errorf("Expected validation error, got nil")
+	}
+
+}
+
+func TestValidationForTransformation(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mf := NewMockFactory(mockCtrl, t)
+
+	// check if variables are defined
+	cfg, err := core.NewConfig(strings.NewReader(`
+vaults:
+  - name: kv1
+    type: mock
+
+secrets:
+  - type: secret
+    vault: kv1
+    name: test
+
+transformations:
+  - in:
+    - test
+    out: testout
+    type: mock
+  - in:
+    - testout
+    out: devnull
+    type: mock
+
+sinks:
+  - type: mock
+    var: test
+    spec:
+      path: ./test.txt
+      mode: 400
+      user: 1000
+`))
+	if err != nil {
+		t.Errorf("Expected nil got err=%#v", err)
+	}
+
+	err = cfg.Validate(mf)
+	if err != nil {
+		t.Errorf("Expected nil got err=%s", err)
+	}
+
+	// test fur unknown input var
+	cfg, err = core.NewConfig(strings.NewReader(`
+vaults:
+  - name: kv1
+    type: mock
+
+secrets:
+  - type: secret
+    vault: kv1
+    name: test
+
+transformations:
+  - in:
+    - nonex
+    out: testout
+    type: mock
+
+sinks:
+  - type: mock
+    var: test
+    spec:
+      path: ./test.txt
+      mode: 400
+      user: 1000
+`))
+	if err != nil {
+		t.Errorf("Expected nil got err=%#v", err)
+	}
+
+	err = cfg.Validate(mf)
+	if err == nil {
+        t.Errorf("Expected validation error, got nil")
+    }
+
+	// test fur empty input var
+	cfg, err = core.NewConfig(strings.NewReader(`
+vaults:
+  - name: kv1
+    type: mock
+
+secrets:
+  - type: secret
+    vault: kv1
+    name: test
+
+transformations:
+  - in:
+    out: testout
+    type: mock
+
+sinks:
+  - type: mock
+    var: test
+    spec:
+      path: ./test.txt
+      mode: 400
+      user: 1000
+`))
+	if err != nil {
+		t.Errorf("Expected nil got err=%#v", err)
+	}
+
+	err = cfg.Validate(mf)
+	if err == nil {
+		t.Errorf("Expected validation error, got nil")
+	}
+}
+
+func TestValidationForTypes(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mf := NewMockFactory(mockCtrl, t)
+
+	// check if variables are defined
+	cfg, err := core.NewConfig(strings.NewReader(`
+vaults:
+  - name: kv1
+    type: mock
+
+secrets:
+  - type: noSuchSecretType
+    vault: kv1
+    name: test
+
+sinks:
+  - type: mock
+    var: test
+    spec:
+      path: ./test.txt
+      mode: 400
+      user: 1000
+`))
+	if err != nil {
+		t.Errorf("Expected nil got err=%#v", err)
+	}
+
 	err = cfg.Validate(mf)
 	if err == nil {
 		t.Errorf("Expected validation error, got nil")

@@ -64,7 +64,7 @@ func (mr *MockUseCaseMockRecorder) RetrieveSecret(arg0, arg1, arg2, arg3, arg4, 
 }
 
 // Transform mocks base method.
-func (m *MockUseCase) Transform(arg0 context.Context, arg1 core.Factory, arg2 *core.Defaults, arg3 core.Repository, arg4 *core.Secret, arg5 *core.Transformations) error {
+func (m *MockUseCase) Transform(arg0 context.Context, arg1 core.Factory, arg2 *core.Defaults, arg3 core.Repository, arg4 *core.Secrets, arg5 *core.Transformation) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Transform", arg0, arg1, arg2, arg3, arg4, arg5)
 	ret0, _ := ret[0].(error)

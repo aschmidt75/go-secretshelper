@@ -54,7 +54,7 @@ func (c *Config) IsVarDefined(varName string) bool {
 	}
 
 	for _, transformation := range c.Transformations {
-		if transformation.ToVar == varName {
+		if transformation.Output == varName {
 			return true
 		}
 	}
@@ -62,10 +62,20 @@ func (c *Config) IsVarDefined(varName string) bool {
 	return false
 }
 
+func validateSecretType(fl validator.FieldLevel) bool {
+	for _, secretType := range ValidSecretTypes() {
+        if secretType == fl.Field().String() {
+            return true
+        }
+    }
+	return false
+}
+
 // Validate validates a configuration using the validator and
 // additional cross checks.
 func (c *Config) Validate(f Factory) error {
 	v := validator.New()
+	v.RegisterValidation("valid-secret-type", validateSecretType)
 
 	st := make(map[string]struct{})
 	for _, e := range f.SinkTypes() {
@@ -75,8 +85,11 @@ func (c *Config) Validate(f Factory) error {
 	for _, e := range f.VaultAccessorTypes() {
 		vat[e] = struct{}{}
 	}
+	tt := make(map[string]struct{})
+	for _, e := range f.TransformationTypes() {
+		tt[e] = struct{}{}
+	}
 
-	//
 	for _, vault := range c.Vaults {
 		if err := v.Struct(vault); err != nil {
 			return err
@@ -94,6 +107,23 @@ func (c *Config) Validate(f Factory) error {
 
 		if v := c.Vaults.GetVaultByName(secret.VaultName); v == nil {
 			return fmt.Errorf("invalid vault %s referenced in secret %s", secret.VaultName, secret.Name)
+		}
+	}
+
+	for _, transformation := range c.Transformations {
+		if err := v.Struct(transformation); err != nil {
+			return err
+		}
+
+		if _, ex := tt[transformation.Type]; !ex {
+			return fmt.Errorf("unknown transformation type: %s", transformation.Type)
+		}
+
+		// all input variables have to be defined
+		for _, inputVar := range transformation.Input {
+			if !c.IsVarDefined(inputVar) {
+				return fmt.Errorf("unknown input variable: %s", inputVar)
+			}
 		}
 	}
 

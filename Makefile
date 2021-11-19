@@ -20,9 +20,9 @@ lint:
 		golint $$file ; \
 	done
 
-.PHONY: cover
+.PHONY: test
 cover:
-	@go test -coverprofile=cover.out ./...
+	@go test -coverprofile=cover.out -coverpkg=./... ./...
 	@go tool cover -func=cover.out
 
 .PHONY: gen
