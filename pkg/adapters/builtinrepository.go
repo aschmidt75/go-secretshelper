@@ -5,22 +5,22 @@ import (
 	"sync"
 )
 
-// DefaultRepository stores all item in a map
-type DefaultRepository struct {
+// BuiltinRepository stores all item in a map
+type BuiltinRepository struct {
 	items map[string]interface{}
 	m *sync.Mutex
 }
 
-// NewDefaultRepository creates a new DefaultRepository
-func NewDefaultRepository() *DefaultRepository {
-	return &DefaultRepository{
+// NewBuiltinRepository creates a new BuiltinRepository
+func NewBuiltinRepository() *BuiltinRepository {
+	return &BuiltinRepository{
 		items: make(map[string]interface{}),
 		m: &sync.Mutex{},
 	}
 }
 
 // Put places varName with content in repository
-func (r *DefaultRepository) Put(varName string, content interface{}) {
+func (r *BuiltinRepository) Put(varName string, content interface{}) {
 	r.m.Lock()
 	defer r.m.Unlock()
 
@@ -28,7 +28,7 @@ func (r *DefaultRepository) Put(varName string, content interface{}) {
 }
 
 // Get returns varName or an error
-func (r *DefaultRepository) Get(varName string) (interface{}, error) {
+func (r *BuiltinRepository) Get(varName string) (interface{}, error) {
 	r.m.Lock()
 	defer r.m.Unlock()
 
