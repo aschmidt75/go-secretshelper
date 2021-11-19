@@ -27,7 +27,7 @@ func NewAzureKeyVault(l *log.Logger) *AzureKeyVault {
 
 // AzureKeyVaultSpec describes access to the vault
 type AzureKeyVaultSpec struct {
-	Url string `yaml:"url"`
+	URL string `yaml:"url"`
 }
 
 // NewAzureKeyVaultSpec creates a new vault spec from the generic interface map
@@ -36,10 +36,10 @@ func NewAzureKeyVaultSpec(in map[interface{}]interface{}) (AzureKeyVaultSpec, er
 
 	v, ex := in["url"]
 	if ex {
-		res.Url = v.(string)
+		res.URL = v.(string)
 
 		// check if url is valid
-		u, err := url.Parse(res.Url)
+		u, err := url.Parse(res.URL)
 		if err != nil {
             return res, fmt.Errorf("invalid url: %s", err)
         }
@@ -62,7 +62,7 @@ func (v *AzureKeyVault) RetrieveSecret(ctx context.Context, defaults *core.Defau
 		return nil, err
 	}
 
-	url := spec.Url
+	url := spec.URL
 	if len(url) == 0 {
 		// compose url from key vault name
 		url = fmt.Sprintf("https://%s.vault.azure.net/", vault.Name)

@@ -9,6 +9,7 @@ import (
 	"text/template"
 )
 
+// TemplateTransformationType is the type for a template transformation
 const TemplateTransformationType = "template"
 
 // TemplateTransformation is an adapter that transforms a secret using a template
