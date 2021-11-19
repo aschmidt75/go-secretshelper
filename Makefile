@@ -21,7 +21,7 @@ lint:
 	done
 
 .PHONY: test
-cover:
+test:
 	@go test -coverprofile=cover.out -coverpkg=./... ./...
 	@go tool cover -func=cover.out
 
