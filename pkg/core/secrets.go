@@ -23,6 +23,7 @@ type Secret struct {
 	RawContentType string
 }
 
+// ValidSecretTypes is a list of valid types of secrets that can be queried from vaults
 func ValidSecretTypes() []string {
 	return []string{
 		"secret",

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/golang/mock/gomock"
 	"go-secretshelper/pkg/core"
+	"io/ioutil"
 	"log"
 	"testing"
 )
@@ -30,7 +31,13 @@ func TestMainUseCase(t *testing.T) {
 			VaultName: "test",
 		},
 	}
-	transformations := &core.Transformations{}
+	transformations := &core.Transformations{
+		&core.Transformation{
+			Input: []string{"test"},
+			Output: "test-out",
+			Type: "mock",
+		},
+	}
 	sinks := &core.Sinks{
 		&core.Sink{
 			Type: "mock",
@@ -39,12 +46,13 @@ func TestMainUseCase(t *testing.T) {
 	}
 	defaults := &core.Defaults{}
 
-	useCase := core.NewMainUseCaseImpl(log.Default())
+	useCase := core.NewMainUseCaseImpl(log.New(ioutil.Discard,"",0))
 
 	// set up expectations
 	mf.GetMockVaultAccessor("mock").EXPECT().RetrieveSecret(ctx, defaults, (*vaults)[0], (*secrets)[0]).Return((*secrets)[0], nil).Times(1)
-	mf.GetMockRepository().EXPECT().Put("test", (*secrets)[0]).Times(1)
-	mf.GetMockRepository().EXPECT().Get("test").Return((*secrets)[0], nil).Times(1)
+	mf.GetMockRepository().EXPECT().Put(gomock.Any(), (*secrets)[0]).Times(2)
+	mf.GetMockRepository().EXPECT().Get(gomock.Any()).Return((*secrets)[0], nil).Times(2)
+	mf.GetMockTransformation("mock").EXPECT().ProcessSecret(ctx, defaults, gomock.Any(), (*transformations)[0]).Return((*secrets)[0], nil).Times(1)
 	mf.GetMockSinkWriter("mock").EXPECT().Write(ctx, defaults, (*secrets)[0], (*sinks)[0]).Times(1)
 
 	err := useCase.Process(ctx, mf, defaults, vaults, secrets, transformations, sinks)

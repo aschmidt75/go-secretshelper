@@ -216,6 +216,39 @@ sinks:
 	if err == nil {
         t.Errorf("Expected validation error, got nil")
     }
+
+	// test fur empty input var
+	cfg, err = core.NewConfig(strings.NewReader(`
+vaults:
+  - name: kv1
+    type: mock
+
+secrets:
+  - type: secret
+    vault: kv1
+    name: test
+
+transformations:
+  - in:
+    out: testout
+    type: mock
+
+sinks:
+  - type: mock
+    var: test
+    spec:
+      path: ./test.txt
+      mode: 400
+      user: 1000
+`))
+	if err != nil {
+		t.Errorf("Expected nil got err=%#v", err)
+	}
+
+	err = cfg.Validate(mf)
+	if err == nil {
+		t.Errorf("Expected validation error, got nil")
+	}
 }
 
 func TestValidationForTypes(t *testing.T) {

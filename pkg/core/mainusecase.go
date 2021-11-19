@@ -39,7 +39,40 @@ func (m *MainUseCaseImpl) RetrieveSecret(ctx context.Context, factory Factory, d
 
 // Transform applies transformation steps to repository
 func (m *MainUseCaseImpl) Transform(ctx context.Context, factory Factory,
-	defaults *Defaults, repository Repository, secret *Secret, transformation *Transformations) error {
+	defaults *Defaults, repository Repository, secrets *Secrets, transformation *Transformation) error {
+
+	secretByName := make(map[string]*Secret)
+	for _, secret := range *secrets {
+		s, err := repository.Get(secret.Name)
+		if err != nil {
+			return err
+		}
+		secretByName[secret.Name] = s.(*Secret)
+	}
+
+	tr := factory.NewTransformation(transformation.Type)
+
+	// collect all secrets that are required by the transformation
+	in := make(Secrets, 0)
+	for _, inputVarName := range transformation.Input {
+		s, ex := secretByName[inputVarName]
+		if !ex {
+			return fmt.Errorf("transformation: input variable %s not found", inputVarName)
+		}
+		in = append(in,s)
+	}
+
+	m.log.Printf("Calling ProcessSecret %#v, %#v, %#v, %#v", ctx, defaults, in, transformation)
+	updatedSecret, err := tr.ProcessSecret(ctx, defaults, &in, transformation)
+	if err != nil {
+		return err
+	}
+
+	// add secrets to config
+	//*secrets = append(*secrets, updatedSecret)
+
+	repository.Put(updatedSecret.Name, updatedSecret)
+
 	return nil
 }
 
@@ -100,8 +133,8 @@ func (m *MainUseCaseImpl) Process(ctx context.Context, factory Factory, defaults
 	// Applying transformations
 	m.log.Printf("Applying transformations")
 	if transformations != nil {
-		for _, secret := range *secrets {
-			if err := m.Transform(ctx, factory, defaults, repo, secret, transformations); err != nil {
+		for _, transformation := range *transformations {
+			if err := m.Transform(ctx, factory, defaults, repo, secrets, transformation); err != nil {
 				return err
 			}
 		}

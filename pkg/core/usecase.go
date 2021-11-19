@@ -9,8 +9,9 @@ type UseCase interface {
 	// RetrieveSecret pulls a single secret from a vault and puts it into a Repository
 	RetrieveSecret(context.Context, Factory, *Defaults, Repository, *Vault, *Secret) error
 
-	// Transform applies transformation steps to repository
-	Transform(context.Context, Factory, *Defaults, Repository, *Secret, *Transformations) error
+	// Transform applies transformation steps to repository. It iterates the given transformations,
+	// pulls secrets from the given list, applies the transformation and puts the result back into the repository
+	Transform(context.Context, Factory, *Defaults, Repository, *Secrets, *Transformation) error
 
 	// WriteToSink writes output a single sink by pulling it from the repository
 	WriteToSink(context.Context, Factory, *Defaults, Repository, *Sink) error
