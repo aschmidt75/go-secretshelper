@@ -15,12 +15,12 @@ func TestConfig(t *testing.T) {
 		t.Error("Must provide a default config")
 	}
 
-	_, err := core.NewConfigFromFile("no.such.config.json")
+	_, err := core.NewConfigFromFile("no.such.config.json", false)
 	if err == nil {
 		t.Errorf("Expected error, got nil")
 	}
 
-	cfg, err := core.NewConfigFromFile("../../../tests/fixtures/fixture-1.yaml")
+	cfg, err := core.NewConfigFromFile("../../../tests/fixtures/fixture-1.yaml", false)
 	if err != nil {
 		t.Errorf("Expected err=nil, got err=%s", err)
 	}
@@ -123,7 +123,7 @@ func DumpValidationErrors(err error) {
 }
 
 func TestValidation(t *testing.T) {
-	cfg, err := core.NewConfigFromFile("../../../tests/fixtures/fixture-1.yaml")
+	cfg, err := core.NewConfigFromFile("../../../tests/fixtures/fixture-1.yaml", false)
 	if err != nil {
 		t.Errorf("Expected err=null, got err=%s", err)
 	}
