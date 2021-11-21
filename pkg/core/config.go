@@ -2,10 +2,12 @@ package core
 
 import (
 	"fmt"
+	"github.com/drone/envsubst"
 	"github.com/go-playground/validator/v10"
 	"gopkg.in/yaml.v2"
 	"io"
 	"os"
+	"strings"
 )
 
 // Config is the main configuration struct given by YAML input
@@ -34,13 +36,38 @@ func NewConfig(in io.Reader) (*Config, error) {
 	return res, nil
 }
 
+// NewConfigWithEnvSubst works like NewConfig with environment variable substitution
+func NewConfigWithEnvSubst(in io.Reader) (*Config, error) {
+	// read all of in and run substitution on it
+	buf := new(strings.Builder)
+	_, err := io.Copy(buf, in)
+	if err != nil {
+		return nil, err
+	}
+
+	inSubst, err := envsubst.EvalEnv(buf.String())
+	if err != nil {
+		return nil, err
+	}
+
+	res := NewDefaultConfig()
+	if err := yaml.Unmarshal([]byte(inSubst), res); err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
+
 // NewConfigFromFile creates a configuration from yaml file
-func NewConfigFromFile(fileName string) (*Config, error) {
+func NewConfigFromFile(fileName string, withEnvSubst bool) (*Config, error) {
 	f, err := os.Open(fileName)
 	if err != nil {
 		return nil, err
 	}
 
+	if withEnvSubst {
+        return NewConfigWithEnvSubst(f)
+    }
 	return NewConfig(f)
 }
 

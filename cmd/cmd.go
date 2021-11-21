@@ -29,7 +29,7 @@ const (
 )
 
 func usage() {
-	fmt.Println("Usage: go-secretshelper [-v] [-c config] <command>")
+	fmt.Println("Usage: go-secretshelper [-v] [-e] [-c config] <command>")
 	fmt.Println("where commands are")
 	fmt.Println("  version		print out version")
 	fmt.Println("  run			run specified config")
@@ -38,6 +38,7 @@ func usage() {
 func main() {
 
 	verboseFlag := flag.Bool("v", false, "Enables verbose output")
+	envFlag := flag.Bool("e", false, "Enables environment variable substitution")
 	flag.Parse()
 
 	var l *log.Logger
@@ -69,7 +70,7 @@ func main() {
 		}
 
 		// read config
-		config, err := core.NewConfigFromFile(*configFlag)
+		config, err := core.NewConfigFromFile(*configFlag, *envFlag)
 		if err != nil {
 			fmt.Printf("Unable to read config from file %s: %s\n", *configFlag, err)
 			os.Exit(ExitCodeInvalidConfig)
