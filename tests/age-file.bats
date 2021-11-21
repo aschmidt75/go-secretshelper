@@ -16,3 +16,10 @@
     [ -f ./go-secrethelper-test.dat ]
     rm ./go-secrethelper-test.dat
 }
+
+@test "invoke cli - run file w/ environment" {
+    VAULT_NAME=kv run ../dist/go-secretshelper -e run -c ./fixtures/fixture-3.yaml
+    [ "$status" -eq 0 ]
+    [ -f ./go-secrethelper-test3.dat ]
+    rm ./go-secrethelper-test3.dat
+}

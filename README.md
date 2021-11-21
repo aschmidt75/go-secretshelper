@@ -41,7 +41,17 @@ sinks:
       mode: 400
 ```
 
-See [docs/](docs/README.md) for more details
+See [docs/](docs/README.md) for more details. A configuration file may contain environment variables, which are expanded before processing, e.g.:
+
+```yaml
+secrets:
+  - type: secret
+    vault: ${VAULT_NAME}
+    name: sample
+```
+
+This will expand the vault name of the environment variable `VAULT_NAME` and continue. This makes it possible to use the same configuration 
+file for multiple environments.
 
 ## Building
 

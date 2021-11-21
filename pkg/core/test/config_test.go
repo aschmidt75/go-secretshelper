@@ -5,6 +5,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/golang/mock/gomock"
 	"go-secretshelper/pkg/core"
+	"os"
 	"strings"
 	"testing"
 )
@@ -14,12 +15,12 @@ func TestConfig(t *testing.T) {
 		t.Error("Must provide a default config")
 	}
 
-	_, err := core.NewConfigFromFile("no.such.config.json")
+	_, err := core.NewConfigFromFile("no.such.config.json", false)
 	if err == nil {
 		t.Errorf("Expected error, got nil")
 	}
 
-	cfg, err := core.NewConfigFromFile("../../../tests/fixtures/fixture-1.yaml")
+	cfg, err := core.NewConfigFromFile("../../../tests/fixtures/fixture-1.yaml", false)
 	if err != nil {
 		t.Errorf("Expected err=nil, got err=%s", err)
 	}
@@ -54,6 +55,44 @@ sinks:
 		t.Error("Expected config result, got nil")
 	}
 
+	inpWithEnv := `
+vaults:
+  - name: kv1
+    type: mock
+
+secrets:
+  - type: secret
+    vault: ${vaultname}
+    name: test
+
+sinks:
+  - type: ${nonex}
+    var: ${varname:=test}
+    spec:
+      path: ./test.txt
+      mode: 400
+      user: 1000
+`
+
+	os.Setenv("vaultname", "kv1")
+
+	cfg, err = core.NewConfigWithEnvSubst(strings.NewReader(inpWithEnv))
+	if err != nil {
+		t.Errorf("Expected err=nil, got err=%s", err)
+	}
+	if cfg == nil {
+		t.Error("Expected config result, got nil")
+	}
+
+	if cfg.Secrets[0].VaultName != "kv1" {
+        t.Errorf("Expected vault=kv1, got vault=%s", cfg.Secrets[0].VaultName)
+    }
+	if cfg.Sinks[0].Var != "test" {
+		t.Errorf("Expected var=test, got var=%s", cfg.Sinks[0].Var)
+	}
+	if cfg.Sinks[0].Type != "" {
+		t.Errorf("Expected empty type, got type=%s", cfg.Sinks[0].Type)
+	}
 }
 
 func DumpValidationErrors(err error) {
@@ -84,7 +123,7 @@ func DumpValidationErrors(err error) {
 }
 
 func TestValidation(t *testing.T) {
-	cfg, err := core.NewConfigFromFile("../../../tests/fixtures/fixture-1.yaml")
+	cfg, err := core.NewConfigFromFile("../../../tests/fixtures/fixture-1.yaml", false)
 	if err != nil {
 		t.Errorf("Expected err=null, got err=%s", err)
 	}
