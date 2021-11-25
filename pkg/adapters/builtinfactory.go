@@ -32,6 +32,7 @@ func (f *BuiltinFactory) SinkTypes() []string {
 func (f *BuiltinFactory) TransformationTypes() []string {
 	return []string{
 		TemplateTransformationType,
+		AgeEncryptTransformationType,
 	}
 }
 
@@ -62,6 +63,8 @@ func (f *BuiltinFactory) NewTransformation(transformationType string) core.Trans
 	switch transformationType {
 	case TemplateTransformationType:
         return NewTemplateTransformation(f.log)
+	case AgeEncryptTransformationType:
+		return NewAgeEncryptTransformation(f.log)
 	}
 	return nil
 }

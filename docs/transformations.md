@@ -35,3 +35,22 @@ To add a Content Type, add to the spec part:
         other={{ .inputVar1 }}
         value={{ .inputVar2 }}
 ```
+
+### Age encryption
+
+The Age encrypt transformation takes one or more secrets as input and encrypts them
+using age, for the specified recipients. Output is rendered as armored age and put
+into the output variable:
+
+```yaml
+transformations:
+  - type: age
+    in:
+      - test
+    out: test-enc
+    spec:
+      recipient: ${age_recipient}
+```
+
+The above part will encrypt the secret `test` and store it in `test-enc`. The recipient
+used for age-encryption is taken from the environment variable `age_recipient`.

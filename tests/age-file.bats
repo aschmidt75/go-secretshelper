@@ -17,9 +17,18 @@
     rm ./go-secrethelper-test.dat
 }
 
-@test "invoke cli - run file w/ environment" {
+@test "invoke cli - run file 3 w/ environment" {
     VAULT_NAME=kv run ../dist/go-secretshelper -e run -c ./fixtures/fixture-3.yaml
     [ "$status" -eq 0 ]
     [ -f ./go-secrethelper-test3.dat ]
     rm ./go-secrethelper-test3.dat
+}
+
+@test "invoke cli - run file 4 w/ age transform" {
+    age_recipient=age1njkx5t9tcc4gq7c53zzy4sfjq0fscm5uzt5vek5pj2khehcpsfsqwzq9jy run ../dist/go-secretshelper -e run -c ./fixtures/fixture-4.yaml
+    [ "$status" -eq 0 ]
+    [ -f ./go-secrethelper-test4.dat ]
+    FL=$(cat ./go-secrethelper-test4.dat | head -1)
+    [ "$FL" = "-----BEGIN AGE ENCRYPTED FILE-----" ]
+    rm ./go-secrethelper-test4.dat
 }
