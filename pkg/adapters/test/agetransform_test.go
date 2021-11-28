@@ -36,21 +36,21 @@ func TestAgeEncryptTransformationSpec(t *testing.T) {
 func TestAgeEncryptTransformation(t *testing.T) {
 	secrets := &core.Secrets{
 		{
-			Name: "s1",
+			Name:       "s1",
 			RawContent: []byte("s3cr3t"),
 		},
 	}
 	transformation := &core.Transformation{
-		Input: []string{"s1"},
+		Input:  []string{"s1"},
 		Output: "s1-enc",
-		Type: "age",
+		Type:   "age",
 		Spec: core.TransformationSpec{
 			"recipient": "age1njkx5t9tcc4gq7c53zzy4sfjq0fscm5uzt5vek5pj2khehcpsfsqwzq9jy",
 		},
 	}
 
 	tt := adapters.NewAgeEncryptTransformation(log.New(ioutil.Discard, "", 0))
-	s, err := tt.ProcessSecret(context.TODO(),&core.Defaults{}, secrets, transformation)
+	s, err := tt.ProcessSecret(context.TODO(), &core.Defaults{}, secrets, transformation)
 	if err != nil {
 		t.Errorf("Error processing template transformation: %s", err)
 	}
@@ -64,13 +64,13 @@ func TestAgeEncryptTransformation(t *testing.T) {
 	r := strings.NewReader(ageIdentity)
 	identities, err := age.ParseIdentities(r)
 	if err != nil {
-        t.Errorf("Error parsing identities: %s", err)
-    }
+		t.Errorf("Error parsing identities: %s", err)
+	}
 	in := armor.NewReader(strings.NewReader(string(s.RawContent)))
 	decryptReader, err := age.Decrypt(in, identities...)
 	if err != nil {
-        t.Errorf("Error decrypting: %s", err)
-    }
+		t.Errorf("Error decrypting: %s", err)
+	}
 	sb := new(strings.Builder)
 	if _, err := io.Copy(sb, decryptReader); err != nil {
 		t.Errorf("Error decrypting: %s", err)

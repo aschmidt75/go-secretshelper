@@ -41,8 +41,8 @@ func NewAzureKeyVaultSpec(in map[interface{}]interface{}) (AzureKeyVaultSpec, er
 		// check if url is valid
 		u, err := url.Parse(res.URL)
 		if err != nil {
-            return res, fmt.Errorf("invalid url: %s", err)
-        }
+			return res, fmt.Errorf("invalid url: %s", err)
+		}
 		if u.Scheme != "https" || u.Host == "" {
 			return res, fmt.Errorf("invalid url: %s", err)
 		}
@@ -67,7 +67,7 @@ func (v *AzureKeyVault) RetrieveSecret(ctx context.Context, defaults *core.Defau
 		// compose url from key vault name
 		url = fmt.Sprintf("https://%s.vault.azure.net/", vault.Name)
 		v.log.Printf("AzureKeyVault: using url: %s", url)
-    }
+	}
 
 	client := keyvault.New()
 
@@ -109,4 +109,3 @@ func (v *AzureKeyVault) RetrieveSecret(ctx context.Context, defaults *core.Defau
 		VaultName:      secret.VaultName,
 	}, nil
 }
-

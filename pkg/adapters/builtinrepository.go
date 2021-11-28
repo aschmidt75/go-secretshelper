@@ -8,14 +8,14 @@ import (
 // BuiltinRepository stores all item in a map
 type BuiltinRepository struct {
 	items map[string]interface{}
-	m *sync.Mutex
+	m     *sync.Mutex
 }
 
 // NewBuiltinRepository creates a new BuiltinRepository
 func NewBuiltinRepository() *BuiltinRepository {
 	return &BuiltinRepository{
 		items: make(map[string]interface{}),
-		m: &sync.Mutex{},
+		m:     &sync.Mutex{},
 	}
 }
 

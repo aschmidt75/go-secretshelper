@@ -46,3 +46,22 @@ However this requires using the name of the vault as it is in the `sinks` and `t
   - name: my-sample-vault
     type: azure-key-vault
 ```
+
+### AWS Secrets Manager
+
+Secrets can be accessed from an [AWS Secret Manager](https://aws.amazon.com/secrets-manager/?nc1=h_ls).
+Specify the vault as follows:
+
+```yaml
+vaults:
+  - name: mysecrets
+    type: aws-secretsmanager
+    spec:
+      region: us-east-2
+```
+
+This will access secrets from the given region.
+
+It uses the default [credentials mechanism of the AWS Go SDK](https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html).
+I.e. the credentials are read from the environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
+The `region` entry above is optional if region info is given by the environment variable `AWS_REGION`.

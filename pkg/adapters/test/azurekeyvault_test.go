@@ -12,7 +12,7 @@ func TestAzureKeyVaultSpec(t *testing.T) {
 	_, err := adapters.NewAzureKeyVaultSpec(m)
 	if err == nil {
 		t.Error("Expected error for invalid url")
-    }
+	}
 
 	m["url"] = "http://not.secure.url.com/"
 	_, err = adapters.NewAzureKeyVaultSpec(m)

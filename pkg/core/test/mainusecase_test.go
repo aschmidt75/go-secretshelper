@@ -33,9 +33,9 @@ func TestMainUseCase(t *testing.T) {
 	}
 	transformations := &core.Transformations{
 		&core.Transformation{
-			Input: []string{"test"},
+			Input:  []string{"test"},
 			Output: "test-out",
-			Type: "mock",
+			Type:   "mock",
 		},
 	}
 	sinks := &core.Sinks{
@@ -46,7 +46,7 @@ func TestMainUseCase(t *testing.T) {
 	}
 	defaults := &core.Defaults{}
 
-	useCase := core.NewMainUseCaseImpl(log.New(ioutil.Discard,"",0))
+	useCase := core.NewMainUseCaseImpl(log.New(ioutil.Discard, "", 0))
 
 	// set up expectations
 	mf.GetMockVaultAccessor("mock").EXPECT().RetrieveSecret(ctx, defaults, (*vaults)[0], (*secrets)[0]).Return((*secrets)[0], nil).Times(1)

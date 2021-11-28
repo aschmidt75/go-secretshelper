@@ -11,10 +11,10 @@ type Sinks []*Sink
 // Sink defines where a secret, indicated by Var, should be written to.
 type Sink struct {
 	// Type of sink. determines structure of spec.
-	Type string   `yaml:"type" validate:"required"`
+	Type string `yaml:"type" validate:"required"`
 
 	// Var defines which variable is written into the sink
-	Var  string   `yaml:"var" validate:"required"`
+	Var string `yaml:"var" validate:"required"`
 
 	// Spec optionally defines properties of the sink
 	Spec SinkSpec `yaml:"spec" validate:""`

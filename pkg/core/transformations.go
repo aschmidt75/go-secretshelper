@@ -22,6 +22,7 @@ type Transformation struct {
 	Spec TransformationSpec `yaml:"spec" validate:""`
 }
 
+// TransformationSpec is the generic specification for a transformation of a given type (simple k/v pairs)
 type TransformationSpec map[interface{}]interface{}
 
 // TransformationPort is the interface for a single transformation

@@ -59,7 +59,7 @@ func (m *MainUseCaseImpl) Transform(ctx context.Context, factory Factory,
 		if !ex {
 			return fmt.Errorf("transformation: input variable %s not found", inputVarName)
 		}
-		in = append(in,s)
+		in = append(in, s)
 	}
 
 	m.log.Printf("Calling ProcessSecret %#v, %#v, %#v, %#v", ctx, defaults, in, transformation)
@@ -107,13 +107,7 @@ func (m *MainUseCaseImpl) Process(ctx context.Context, factory Factory, defaults
 	vaults *Vaults, secrets *Secrets, transformations *Transformations, sinks *Sinks) error {
 
 	// need at least one secret, from one vault going to one sink. If either is missing, we cannot proceed.
-	if secrets == nil || len(*secrets) == 0 {
-		return nil
-	}
-	if sinks == nil || len(*sinks) == 0 {
-		return nil
-	}
-	if vaults == nil || len(*vaults) == 0 {
+	if (secrets == nil || len(*secrets) == 0) || (vaults == nil || len(*vaults) == 0) || (sinks == nil || len(*sinks) == 0) {
 		return nil
 	}
 

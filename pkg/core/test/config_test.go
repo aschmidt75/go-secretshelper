@@ -85,8 +85,8 @@ sinks:
 	}
 
 	if cfg.Secrets[0].VaultName != "kv1" {
-        t.Errorf("Expected vault=kv1, got vault=%s", cfg.Secrets[0].VaultName)
-    }
+		t.Errorf("Expected vault=kv1, got vault=%s", cfg.Secrets[0].VaultName)
+	}
 	if cfg.Sinks[0].Var != "test" {
 		t.Errorf("Expected var=test, got var=%s", cfg.Sinks[0].Var)
 	}
@@ -253,8 +253,8 @@ sinks:
 
 	err = cfg.Validate(mf)
 	if err == nil {
-        t.Errorf("Expected validation error, got nil")
-    }
+		t.Errorf("Expected validation error, got nil")
+	}
 
 	// test fur empty input var
 	cfg, err = core.NewConfig(strings.NewReader(`

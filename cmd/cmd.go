@@ -13,13 +13,13 @@ import (
 )
 
 var (
-	commit  = "none"
-	date    = "unknown"
+	commit = "none"
+	date   = "unknown"
 )
 
 const (
 	// ExitCodeOk is ok
-	ExitCodeOk                 = 0
+	ExitCodeOk = 0
 
 	// ExitCodeNoOrUnknownCommand we're not able to run the command
 	ExitCodeNoOrUnknownCommand = 1
@@ -99,7 +99,7 @@ func main() {
 		}
 		os.Exit(ExitCodeOk)
 	default:
-		fmt.Fprintf(os.Stderr, "unkown command: %s\n", values[0])
+		fmt.Fprintf(os.Stderr, "unknown command: %s\n", values[0])
 		usage()
 		os.Exit(ExitCodeNoOrUnknownCommand)
 	}

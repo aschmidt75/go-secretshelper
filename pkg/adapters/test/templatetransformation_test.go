@@ -18,8 +18,8 @@ func TestTemplateTransformationSpec(t *testing.T) {
 
 	spec, err := adapters.NewTemplateTransformationSpec(in)
 	if err != nil {
-        t.Errorf("Error creating spec: %s", err)
-    }
+		t.Errorf("Error creating spec: %s", err)
+	}
 	if spec.Template == nil {
 		t.Errorf("Expected template to be present, got nil")
 	}
@@ -34,11 +34,11 @@ func TestTemplateTransformationSpec(t *testing.T) {
 func TestTemplateTransformation(t *testing.T) {
 	secrets := &core.Secrets{
 		{
-			Name: "s1",
+			Name:       "s1",
 			RawContent: []byte("123"),
 		},
 		{
-			Name: "s2",
+			Name:       "s2",
 			RawContent: []byte("456"),
 		},
 	}
@@ -46,16 +46,16 @@ func TestTemplateTransformation(t *testing.T) {
 	tr := "Name: 123\nValue: 456\n"
 
 	transformation := &core.Transformation{
-		Input: []string{"s1", "s2"},
+		Input:  []string{"s1", "s2"},
 		Output: "result",
-		Type: "template",
+		Type:   "template",
 		Spec: core.TransformationSpec{
 			"template": ts,
 		},
 	}
 
 	tt := adapters.NewTemplateTransformation(log.New(ioutil.Discard, "", 0))
-	s, err := tt.ProcessSecret(context.TODO(),&core.Defaults{}, secrets, transformation)
+	s, err := tt.ProcessSecret(context.TODO(), &core.Defaults{}, secrets, transformation)
 	if err != nil {
 		t.Errorf("Error processing template transformation: %s", err)
 	}

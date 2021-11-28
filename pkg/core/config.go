@@ -66,8 +66,8 @@ func NewConfigFromFile(fileName string, withEnvSubst bool) (*Config, error) {
 	}
 
 	if withEnvSubst {
-        return NewConfigWithEnvSubst(f)
-    }
+		return NewConfigWithEnvSubst(f)
+	}
 	return NewConfig(f)
 }
 
@@ -91,10 +91,10 @@ func (c *Config) IsVarDefined(varName string) bool {
 
 func validateSecretType(fl validator.FieldLevel) bool {
 	for _, secretType := range ValidSecretTypes() {
-        if secretType == fl.Field().String() {
-            return true
-        }
-    }
+		if secretType == fl.Field().String() {
+			return true
+		}
+	}
 	return false
 }
 
@@ -127,6 +127,25 @@ func (c *Config) Validate(f Factory) error {
 		}
 	}
 
+	if err := c.validateSecrets(f); err != nil {
+		return err
+	}
+
+	if err := c.validateTransformations(f); err != nil {
+		return err
+	}
+
+	if err := c.validateSinks(f); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Config) validateSecrets(f Factory) error {
+	v := validator.New()
+	v.RegisterValidation("valid-secret-type", validateSecretType)
+
 	for _, secret := range c.Secrets {
 		if err := v.Struct(secret); err != nil {
 			return err
@@ -135,6 +154,17 @@ func (c *Config) Validate(f Factory) error {
 		if v := c.Vaults.GetVaultByName(secret.VaultName); v == nil {
 			return fmt.Errorf("invalid vault %s referenced in secret %s", secret.VaultName, secret.Name)
 		}
+	}
+
+	return nil
+}
+
+func (c *Config) validateTransformations(f Factory) error {
+	v := validator.New()
+
+	tt := make(map[string]struct{})
+	for _, e := range f.TransformationTypes() {
+		tt[e] = struct{}{}
 	}
 
 	for _, transformation := range c.Transformations {
@@ -152,6 +182,17 @@ func (c *Config) Validate(f Factory) error {
 				return fmt.Errorf("unknown input variable: %s", inputVar)
 			}
 		}
+	}
+
+	return nil
+}
+
+func (c *Config) validateSinks(f Factory) error {
+	v := validator.New()
+
+	st := make(map[string]struct{})
+	for _, e := range f.SinkTypes() {
+		st[e] = struct{}{}
 	}
 
 	for _, sink := range c.Sinks {

@@ -41,6 +41,7 @@ func (f *BuiltinFactory) VaultAccessorTypes() []string {
 	return []string{
 		AgeVaultType,
 		AzureKeyVaultType,
+		AWSSecretsManagerType,
 	}
 }
 
@@ -62,7 +63,7 @@ func (f *BuiltinFactory) NewSinkWriter(sinkType string) core.SinkWriterPort {
 func (f *BuiltinFactory) NewTransformation(transformationType string) core.TransformationPort {
 	switch transformationType {
 	case TemplateTransformationType:
-        return NewTemplateTransformation(f.log)
+		return NewTemplateTransformation(f.log)
 	case AgeEncryptTransformationType:
 		return NewAgeEncryptTransformation(f.log)
 	}
@@ -76,6 +77,8 @@ func (f *BuiltinFactory) NewVaultAccessor(vaultType string) core.VaultAccessorPo
 		return NewAgeVault(f.log, f.fs)
 	case AzureKeyVaultType:
 		return NewAzureKeyVault(f.log)
+	case AWSSecretsManagerType:
+		return NewAWSSecretsManager(f.log)
 	}
 	return nil
 }

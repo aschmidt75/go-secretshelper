@@ -11,6 +11,7 @@ import (
 	"strings"
 )
 
+// AgeEncryptTransformationType is the type identifier to be used in configuration files
 const AgeEncryptTransformationType = "age"
 
 // AgeEncryptTransformation is an transformation port adapter capable of
@@ -36,14 +37,14 @@ func NewAgeEncryptionTransformationSpec(in map[interface{}]interface{}) (AgeEncr
 		return AgeEncryptionTransformationSpec{}, fmt.Errorf("recipient element must be a string in spec of age transform")
 	}
 
-    return AgeEncryptionTransformationSpec{
+	return AgeEncryptionTransformationSpec{
 		Recipient: recipientStr,
 	}, nil
 }
 
 // NewAgeEncryptTransformation returns a new instance of AgeEncrypt transformation
 func NewAgeEncryptTransformation(log *log.Logger) *AgeEncryptTransformation {
-    return &AgeEncryptTransformation{log: log}
+	return &AgeEncryptTransformation{log: log}
 }
 
 // ProcessSecret takes the incoming secret, encrypts it for the recipient as per spec of the transformation and
@@ -66,7 +67,7 @@ func (aet *AgeEncryptTransformation) ProcessSecret(ctx context.Context, defaults
 	for _, inVar := range *secrets {
 		for _, inName := range transformation.Input {
 			if inVar.Name == inName {
-				rawInput = fmt.Sprintf("%s%s",rawInput, inVar.RawContent)
+				rawInput = fmt.Sprintf("%s%s", rawInput, inVar.RawContent)
 			}
 		}
 	}
@@ -77,7 +78,7 @@ func (aet *AgeEncryptTransformation) ProcessSecret(ctx context.Context, defaults
 	a := armor.NewWriter(b)
 	defer func() {
 		if err := a.Close(); err != nil {
-		    aet.log.Printf("AgeTransformation: error closing writer: %v", err)
+			aet.log.Printf("AgeTransformation: error closing writer: %v", err)
 		}
 	}()
 
@@ -96,13 +97,9 @@ func (aet *AgeEncryptTransformation) ProcessSecret(ctx context.Context, defaults
 	}
 
 	return &core.Secret{
-		Name: transformation.Output,
-		Type: "transformed-by-age",
-		RawContent: []byte(b.String()),
-		RawContentType: "application/octet-stream",	//spec.ContentType,
+		Name:           transformation.Output,
+		Type:           "transformed-by-age",
+		RawContent:     []byte(b.String()),
+		RawContentType: "application/octet-stream", //spec.ContentType,
 	}, nil
 }
-
-
-
-
