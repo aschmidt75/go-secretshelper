@@ -32,3 +32,12 @@
     [ "$FL" = "-----BEGIN AGE ENCRYPTED FILE-----" ]
     rm ./go-secrethelper-test4.dat
 }
+
+@test "invoke cli - run file 5 w/ jq transform" {
+    run ../dist/go-secretshelper -e run -c ./fixtures/fixture-5.yaml
+    [ "$status" -eq 0 ]
+    [ -f ./go-secrethelper-test5.dat ]
+    FL=$(cat ./go-secrethelper-test5.dat | head -1)
+    [ "$FL" = "s3cr3t" ]
+    rm ./go-secrethelper-test5.dat
+}

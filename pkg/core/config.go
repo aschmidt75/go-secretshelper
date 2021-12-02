@@ -10,12 +10,21 @@ import (
 	"strings"
 )
 
-// Config is the main configuration struct given by YAML input
+// Config is the main configuration struct.
 type Config struct {
+	// Defaults contains settings valid for some or all other sections
 	Defaults        Defaults        `yaml:"defaults" validate:""`
+
+	// Vaults define all the vaults where secrets are pulled from
 	Vaults          Vaults          `yaml:"vaults" validate:"required,dive"`
+
+	// Secrets define the name and location of the secrets
 	Secrets         Secrets         `yaml:"secrets" validate:"required,dive"`
+
+	// Transformations define optional transformation steps for secrets
 	Transformations Transformations `yaml:"transformations" validate:""`
+
+	// Sinks define the output sinks for the (transformed) secrets
 	Sinks           Sinks           `yaml:"sinks" validate:"required,dive"`
 }
 

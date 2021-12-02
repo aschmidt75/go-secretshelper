@@ -1,3 +1,4 @@
+// Package core contains the components for the use case
 //go:generate mockgen -package mocks -destination=mocks/mock_usecase.go go-secretshelper/pkg/core UseCase
 package core
 

@@ -78,7 +78,6 @@ func (v *AWSSecretsManager) RetrieveSecret(ctx context.Context, defaults *core.D
 
 	v.log.Printf("AWSSecretsManager[%s]: Retrieved secret name=%s, arn=%s, v=%s\n", vault.Name, secret.Name, *result.ARN, *result.VersionId)
 
-
 	return &core.Secret{
 		RawContent:     []byte(*result.SecretString),
 		RawContentType: "",

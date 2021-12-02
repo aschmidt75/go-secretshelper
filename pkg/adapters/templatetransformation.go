@@ -86,7 +86,7 @@ func (t *TemplateTransformation) ProcessSecret(ctx context.Context,
 
 	res := &core.Secret{
 		Name:           transformation.Output,
-		Type:           "transformed-by-template",
+		Type:           "transformed-by:template",
 		RawContent:     []byte(b.String()),
 		RawContentType: spec.ContentType,
 	}

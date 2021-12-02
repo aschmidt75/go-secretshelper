@@ -33,6 +33,7 @@ func (f *BuiltinFactory) TransformationTypes() []string {
 	return []string{
 		TemplateTransformationType,
 		AgeEncryptTransformationType,
+		JQTransformationType,
 	}
 }
 
@@ -66,6 +67,8 @@ func (f *BuiltinFactory) NewTransformation(transformationType string) core.Trans
 		return NewTemplateTransformation(f.log)
 	case AgeEncryptTransformationType:
 		return NewAgeEncryptTransformation(f.log)
+	case JQTransformationType:
+		return NewJQTransformation(f.log)
 	}
 	return nil
 }

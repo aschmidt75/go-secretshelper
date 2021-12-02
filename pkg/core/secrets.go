@@ -26,7 +26,7 @@ type Secret struct {
 // ValidSecretTypes is a list of valid types of secrets that can be queried from vaults
 func ValidSecretTypes() []string {
 	return []string{
-		"secret",			// secret is the default, text/plain retrievable secret, e.g. a password
+		"secret", // secret is the default, text/plain retrievable secret, e.g. a password
 	}
 }
 

@@ -54,3 +54,67 @@ transformations:
 
 The above part will encrypt the secret `test` and store it in `test-enc`. The recipient
 used for age-encryption is taken from the environment variable `age_recipient`.
+
+### JQ
+
+The JQ transformation takes one or more secrets as input and applies a jq filter to them. This
+allows for filtering of values in arbitrary json structs, e.g. for a secret named `s1` of content type
+application/json and content like
+
+```json
+{
+  "endpoint": "foo",
+  "apikey": "bar"
+}
+```
+
+this transformation pulls out the `apikey` and stores it in the output variable `s1-apikey`:
+
+```yaml
+transformations:
+  - type: jq
+    in:
+      - s1
+    out: s1-apikey
+    spec:
+      q: ".apikey"
+      raw: true
+```
+
+Setting `raw` to `false` lets you use the actual response as a json structure for later
+processing, e.g. for a secret `s2`
+
+```json
+{
+  "db1": {
+    "endpoint": "foo",
+    "apikey": "bar"
+  },
+  "db2": {
+    "endpoint": "baz",
+    "apikey": "qux"
+  }
+}
+```
+
+this transformation 
+
+```yaml
+transformations:
+  - type: jq
+    in:
+      - s2
+    out: s2-db2
+    spec:
+      q: ".db2"
+      raw: false
+```
+
+yields the contents of `db2` as a json structure into new secret `s2-db2`.
+
+```json
+{
+    "endpoint": "baz",
+    "apikey": "qux"
+}
+```

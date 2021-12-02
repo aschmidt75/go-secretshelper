@@ -1,3 +1,4 @@
+// Package core contains the core components for a transformation
 //go:generate mockgen -package mocks -destination=mocks/mock_transformationport.go go-secretshelper/pkg/core TransformationPort
 package core
 
@@ -20,6 +21,49 @@ type Transformation struct {
 
 	// Spec is the generic specification for a transformation of a given type
 	Spec TransformationSpec `yaml:"spec" validate:""`
+}
+
+// TransformationConfigOpts is the fluent-style configuration option func
+type TransformationConfigOpts func(*Transformation)
+
+// TransformationConfig creates a Transformation struct from the given options
+func TransformationConfig(opts ...TransformationConfigOpts) *Transformation {
+	res := &Transformation{
+		Input: make([]string,0),
+		Spec: TransformationSpec{},
+	}
+	for _, opt := range opts {
+		opt(res)
+	}
+	return res
+}
+
+// WithTransformationType sets the type of the transformation
+func WithTransformationType(tp string) TransformationConfigOpts {
+	return func(t *Transformation) {
+		t.Type = tp
+	}
+}
+
+// WithOutput sets the output variable name
+func WithOutput(outp string) TransformationConfigOpts {
+	return func(t *Transformation) {
+		t.Output = outp
+	}
+}
+
+// WithSpec sets a key/value pair of the spec of the transformation
+func WithSpec(key string, value interface{}) TransformationConfigOpts {
+	return func(t *Transformation) {
+		t.Spec[key] = value
+	}
+}
+
+// WithInput sets the input variables by adding the given one.
+func WithInput(inp string) TransformationConfigOpts {
+	return func(t *Transformation) {
+		t.Input = append(t.Input, inp)
+	}
 }
 
 // TransformationSpec is the generic specification for a transformation of a given type (simple k/v pairs)
