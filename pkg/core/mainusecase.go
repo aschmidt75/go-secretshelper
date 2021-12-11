@@ -102,12 +102,16 @@ func (m *MainUseCaseImpl) WriteToSink(ctx context.Context, factory Factory, defa
 	return nil
 }
 
+// need at least one secret, from one vault going to one sink. If either is missing, we cannot proceed.
+func (m *MainUseCaseImpl) dataMissing(vaults *Vaults, secrets *Secrets, sinks *Sinks) bool {
+	return (secrets == nil || len(*secrets) == 0) || (vaults == nil || len(*vaults) == 0) || (sinks == nil || len(*sinks) == 0)
+}
+
 // Process runs the main use case
 func (m *MainUseCaseImpl) Process(ctx context.Context, factory Factory, defaults *Defaults,
 	vaults *Vaults, secrets *Secrets, transformations *Transformations, sinks *Sinks) error {
 
-	// need at least one secret, from one vault going to one sink. If either is missing, we cannot proceed.
-	if (secrets == nil || len(*secrets) == 0) || (vaults == nil || len(*vaults) == 0) || (sinks == nil || len(*sinks) == 0) {
+	if m.dataMissing(vaults, secrets, sinks) {
 		return nil
 	}
 
@@ -125,8 +129,8 @@ func (m *MainUseCaseImpl) Process(ctx context.Context, factory Factory, defaults
 	}
 
 	// Applying transformations
-	m.log.Printf("Applying transformations")
-	if transformations != nil {
+	if transformations != nil && len(*transformations) > 0 {
+		m.log.Printf("Applying transformations")
 		for _, transformation := range *transformations {
 			if err := m.Transform(ctx, factory, defaults, repo, secrets, transformation); err != nil {
 				return err

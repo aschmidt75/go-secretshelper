@@ -135,7 +135,7 @@ func (s *FileSink) Write(ctx context.Context, defaults *core.Defaults, secret *c
 		return err
 	}
 
-	s.log.Printf("Written secret %s: %d bytes, to file %s, mode %d, chown-ed %d:%d\n", secret.Name, n, spec.Path, os.FileMode(*spec.Mode), uid, gid)
+	s.log.Printf("Written secret \"%s\" to file %s, mode %d, chown-ed %d:%d\n", secret.Name, spec.Path, os.FileMode(*spec.Mode), uid, gid)
 
 	return nil
 }

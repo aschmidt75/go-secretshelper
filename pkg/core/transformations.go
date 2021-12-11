@@ -29,8 +29,8 @@ type TransformationConfigOpts func(*Transformation)
 // TransformationConfig creates a Transformation struct from the given options
 func TransformationConfig(opts ...TransformationConfigOpts) *Transformation {
 	res := &Transformation{
-		Input: make([]string,0),
-		Spec: TransformationSpec{},
+		Input: make([]string, 0),
+		Spec:  TransformationSpec{},
 	}
 	for _, opt := range opts {
 		opt(res)

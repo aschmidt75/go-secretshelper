@@ -43,6 +43,7 @@ func (f *BuiltinFactory) VaultAccessorTypes() []string {
 		AgeVaultType,
 		AzureKeyVaultType,
 		AWSSecretsManagerType,
+		GCPSecretManagerType,
 	}
 }
 
@@ -82,6 +83,8 @@ func (f *BuiltinFactory) NewVaultAccessor(vaultType string) core.VaultAccessorPo
 		return NewAzureKeyVault(f.log)
 	case AWSSecretsManagerType:
 		return NewAWSSecretsManager(f.log)
+	case GCPSecretManagerType:
+		return NewGCPSecretManager(f.log)
 	}
 	return nil
 }
