@@ -36,21 +36,21 @@ transformations:
   - type: template
     in:
       - sample
-    out: sample-csv
+    out: sample-ini
     spec:
       template: |
         thesecret={{ .sample }}
 
 sinks:
   - type: file
-    var: sample
+    var: sample-ini
     spec:
-      path: ./sample.dat
+      path: ./sample.ini
       mode: 400
 ```
 
 The above configuration defines a secret named `sample`, which is read from the AWS Secrets Manager instance in `us-east-2`. The secret is then transformed by the 
-template and stored in a new secret named `sample-csv`. The new secret is written to a file named `./sample.dat` with file mode 400. Such a configuration may define
+template and stored in a new secret named `sample-ini`. The new secret is written to a file named `./sample.ini` with file mode 400. Such a configuration may define
 multiple vaults, secrets, multiple transformations and sinks.
 
 See [docs/](docs/README.md) for more details. A configuration file may contain environment variables, which are expanded before processing by using the `-e` switch, e.g.:
